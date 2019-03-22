@@ -9,6 +9,7 @@ class State {
     private int xCol;
     private int oRow;
     private int oCol;
+    private String winner;
     private HashMap<Integer, int[][]> axisOffsets;
 
     public State(boolean xTop) {
@@ -27,6 +28,8 @@ class State {
         board[7][7] = xTop ? 'O' : 'X';
         xRow = xCol = xTop ? 0 : 7;
         oRow = oCol = xTop ? 7 : 0;
+
+        winner = "None";
 
         initOffsets();
     }
@@ -47,6 +50,7 @@ class State {
         xCol = otherState.xCol;
         oRow = otherState.oRow;
         oCol = otherState.oCol;
+        winner = otherState.winner;
 
         initOffsets();
     }
@@ -263,6 +267,7 @@ class State {
         }
 
         if (!xFree) {
+            winner = "O";
             return true;
         }
 
@@ -278,11 +283,16 @@ class State {
             }
         }
 
+        winner = "X";
         return true;
     }
 
     public int getUtility() {
         return utility;
+    }
+
+    public String getWinner() {
+        return winner;
     }
 
     public State getCopy() {

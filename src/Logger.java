@@ -21,16 +21,32 @@ class Logger {
     }
 
     public String[] getMovesLog() {
-        String[] movesLog = new String[compMoves.size()];
+        String[] movesLog = new String[Math.max(compMoves.size(), oppMoves.size())];
+        int i;
 
-        for (int i = 0; i < compMoves.size(); i++) {
-            movesLog[i] = compMoves.get(i) + "     ";
-            try {
-                movesLog[i] += oppMoves.get(i);
-            } catch (IndexOutOfBoundsException e) {
-                continue;
+        if (oppMoves.size() > compMoves.size()) {
+            for (i = 0; i < oppMoves.size(); i++) {
+                try {
+                    movesLog[i] = compMoves.get(i) + "     ";
+                    movesLog[i] += oppMoves.get(i);
+                } catch (IndexOutOfBoundsException e) {
+                    movesLog[i] = "       " + oppMoves.get(i);
+                    continue;
+                }
             }
+
+        } else {
+            for (i = 0; i < compMoves.size(); i++) {
+                movesLog[i] = compMoves.get(i) + "     ";
+                try {
+                    movesLog[i] += oppMoves.get(i);
+                } catch (IndexOutOfBoundsException e) {
+                    continue;
+                }
+            }
+
         }
+
 
         return movesLog;
     }

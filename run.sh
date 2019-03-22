@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-java -cp '.;bin' Project3
+java -cp '.;bin' Project3 "$@"

@@ -4,41 +4,8 @@ import java.util.Scanner;
 
 class Project3 {
     public void run() {
-        State state = new State(true);
-        Logger logger = new Logger();
-        Scanner scanner = new Scanner(System.in);
-        UI ui = new UI(scanner);
-        int row, col;
-        String compMove, oppMove;
-
-        long startTime, runTime;
-
-        while (!state.isTerminal()) {
-            startTime = System.currentTimeMillis();
-            compMove = Minimax.search(state, 7);
-            runTime = System.currentTimeMillis() - startTime;
-            System.out.printf("\nMinimax Run Time: %.3f seconds\n\n", runTime / 1000.0);
-            
-            row = Character.getNumericValue(compMove.charAt(0));
-            col = Character.getNumericValue(compMove.charAt(1));
-            state.move(true, row, col);
-            logger.log(true, row, col);
-            
-            ui.printGameState(state, logger);
-            
-            if (state.isTerminal()) {
-                break;
-            }
-            
-            ui.printCompMove(row, col);
-            oppMove = ui.getOppMove(state.getSuccessors(state.getORow(), state.getOCol()));
-            row = Character.getNumericValue(oppMove.charAt(0));
-            col = Character.getNumericValue(oppMove.charAt(1));
-            state.move(false, row, col);
-            logger.log(false, row, col);
-        }
-
-        scanner.close();
+        Engine engine = new Engine();
+        engine.startGame();
     }
 
     public void testrun() {
@@ -56,7 +23,7 @@ class Project3 {
             startTime = System.currentTimeMillis();
             compMove = Minimax.search(state, 8);
             runTime = System.currentTimeMillis() - startTime;
-            System.out.printf("Minimax Run Time: %.3f seconds\n", runTime / 1000.0);
+            ui.printRunTime(runTime);
 
             row = Character.getNumericValue(compMove.charAt(0));
             col = Character.getNumericValue(compMove.charAt(1));
@@ -64,6 +31,7 @@ class Project3 {
             logger.log(true, row, col);
 
             if (state.isTerminal()) {
+                ui.printGameState(state, logger);
                 break;
             }
             
@@ -75,6 +43,8 @@ class Project3 {
 
             ui.printGameState(state, logger);
         }
+
+        ui.printWinner(state.getWinner());
 
         scanner.close();
     }
@@ -89,6 +59,10 @@ class Project3 {
     public static void main(String[] args) {
         Project3 program = new Project3();
 
-        program.testrun();
+        if (args.length > 0 && args[0].equals("--test")) {
+            program.testrun();
+        } else {
+            program.run();
+        }
     }
 }

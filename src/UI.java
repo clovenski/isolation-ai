@@ -64,4 +64,51 @@ class UI {
 
         System.out.println("\nComputer's move is: " + move + "\n");
     }
+
+    public void printRunTime(long runTime) {
+        System.out.printf("\nMinimax Run Time: %.3f seconds\n\n", runTime / 1000.0);
+    }
+
+    public boolean getWhoFirst() {
+        boolean xFirst;
+        String input;
+
+        while (true) {
+            System.out.print("Who goes first, C for computer, O for opponent: ");
+
+            input = scanner.nextLine().toUpperCase();
+
+            if (input.matches("[CO]")) {
+                xFirst = input.equals("C");
+                break;
+            } else {
+                System.err.println("INVALID INPUT");
+            }
+        }
+
+        return xFirst;
+    }
+
+    public long getTimeLimit() {
+        long timeLimit;
+
+        while (true) {
+            System.out.print("Enter time limit (in seconds): ");
+
+            try {
+                timeLimit = Long.parseLong(scanner.nextLine()) * 1000L;
+                break;
+            } catch (Exception e) {
+                System.err.println("INVALID INPUT");
+            }
+        }
+
+        return timeLimit;
+    }
+
+    public void printWinner(String winner) {
+        assert winner.matches("[XO]");
+
+        System.out.println(winner + " is winner!");
+    }
 }
