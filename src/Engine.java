@@ -16,7 +16,7 @@ class Engine {
         boolean xFirst = ui.getWhoFirst();
         state = new State(xFirst);
 
-        int row, col;
+        int row, col, turnCount = 0;
         String compMove, oppMove;
         long startTime, runTime;
 
@@ -41,6 +41,10 @@ class Engine {
             col = Character.getNumericValue(compMove.charAt(1));
             state.move(true, row, col);
             logger.log(true, row, col);
+            if (turnCount < 2) {
+                turnCount++;
+                Minimax.random = turnCount < 5;
+            }
 
             ui.printGameState(state, logger);
 

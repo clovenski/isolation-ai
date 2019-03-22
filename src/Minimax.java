@@ -1,20 +1,33 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 class Minimax {
     private static String action;
     private static int maxDepth;
+    private static Random rng = new Random();
+    private static HashMap<Integer, ArrayList<String>> optimalMoves;
+    private static int maxUtility;
+    public static boolean random = true;
 
     public static String search(State state, int maxDepth) {
         Minimax.maxDepth = maxDepth;
+        optimalMoves = new HashMap<Integer, ArrayList<String>>();
         action = "";
+        maxUtility = Integer.MIN_VALUE;
 
         maxValue(state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
 
-        return action;
+        if (Minimax.random) {
+            int size = optimalMoves.get(maxUtility).size();
+            return optimalMoves.get(maxUtility).get(rng.nextInt(size));
+        } else {
+            return action;
+        }
     }
 
     private static int maxValue(State state, int alpha, int beta, int depth) {
-        int v, oldV, row, oldRow, col, oldCol;
+        int v, oldV, row, oldRow, col, oldCol, minResult;
         String oldAction;
         ArrayList<String> successors;
 
@@ -33,11 +46,15 @@ class Minimax {
             oldAction = action;
 
             state.move(true, row, col);
-            v = Math.max(v, minValue(state, alpha, beta, depth + 1));
+            minResult = minValue(state, alpha, beta, depth + 1);
+            v = Math.max(v, minResult);
             if (v == oldV) {
                 action = oldAction;
             } else {
                 action = move;
+            }
+            if (depth == 0 && oldV <= minResult) {
+                updateOptimals(v, move);
             }
             state.revert(true, oldRow, oldCol);
             if (v >= beta) {
@@ -83,5 +100,18 @@ class Minimax {
         }
 
         return v;
+    }
+
+    private static void updateOptimals(int v, String move) {
+        ArrayList<String> moves;
+        if (v > maxUtility) {
+            optimalMoves.clear();
+            moves = new ArrayList<String>();
+            moves.add(move);
+            optimalMoves.put(v, moves);
+            maxUtility = v;
+        } else {
+            optimalMoves.get(v).add(move);
+        }
     }
 }
