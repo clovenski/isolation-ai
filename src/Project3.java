@@ -65,7 +65,7 @@ class Project3 {
 
     private String getOppRandMove(State state) {
         Random rng = new Random();
-        ArrayList<String> successors = state.getSuccessors(state.getORow(), state.getOCol());
+        ArrayList<String> successors = state.getSuccessors(false);
 
         return successors.get(rng.nextInt(successors.size()));
     }

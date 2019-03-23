@@ -122,7 +122,7 @@ class State {
     private LinkedList<Integer> getAxisOrder(int row, int col) {
         // get order in which to check axes
 
-        // dummy code, simplified axis ordering: clockwise from up
+        // simplified axis ordering: clockwise from up
         int[] temp = new int[] {0, 1, 2, 3, 4, 5, 6, 7};
         LinkedList<Integer> order = new LinkedList<Integer>();
         for (int i : temp) {
@@ -131,10 +131,14 @@ class State {
         return order;
     }
 
-    public ArrayList<String> getSuccessors(int row, int col) {
+    public ArrayList<String> getSuccessors(boolean ofX) {
         ArrayList<String> successors = new ArrayList<String>(27);
-        int i, rowOffset, colOffset;
-        LinkedList<Integer> axisOrder = getAxisOrder(row, col);
+        int i, row, col, rowOffset, colOffset;
+        LinkedList<Integer> axisOrder;
+
+        row = ofX ? xRow : oRow;
+        col = ofX ? xCol : oCol;
+        axisOrder = getAxisOrder(row, col);
 
         for (Integer axis : axisOrder) {
             for (i = 0; i < 8; i++) {
@@ -157,7 +161,7 @@ class State {
         return successors;
     }
 
-    private static class SuccessorComp implements Comparator<String> {
+    private class SuccessorComp implements Comparator<String> {
         public int compare(String s1, String s2) {
             int s1Row = s1.charAt(0);
             int s1Col = s1.charAt(1);
@@ -177,7 +181,7 @@ class State {
         }
 
         private double distFromCenter(int row, int col) {
-            return Math.sqrt(Math.pow(row - 3.5, 2) + Math.pow(col - 3.5, 2));
+            return Math.abs(row - 3.5) + Math.abs(col - 3.5);
         }
     }
 

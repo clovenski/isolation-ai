@@ -22,7 +22,7 @@ class Engine {
         
         ui.printGameState(state, logger);
         if (!xFirst) {
-            oppMove = ui.getOppMove(state.getSuccessors(state.getORow(), state.getOCol()));
+            oppMove = ui.getOppMove(state.getSuccessors(false));
             row = Character.getNumericValue(oppMove.charAt(0));
             col = Character.getNumericValue(oppMove.charAt(1));
             state.move(false, row, col);
@@ -65,7 +65,7 @@ class Engine {
             }
 
             ui.printCompMove(row, col);
-            oppMove = ui.getOppMove(state.getSuccessors(state.getORow(), state.getOCol()));
+            oppMove = ui.getOppMove(state.getSuccessors(false));
             row = Character.getNumericValue(oppMove.charAt(0));
             col = Character.getNumericValue(oppMove.charAt(1));
             state.move(false, row, col);

@@ -12,35 +12,6 @@ class Minimax {
     private static long startTime;
     public static boolean random = true;
     public static long timeRemaining;
-    
-    private static boolean learning = false;
-    private static Learner learner = null;
-
-    public static void searchForLearning(Learner learner, State state, int maxDepth) {
-        Minimax.learner = learner;
-        Minimax.maxDepth = maxDepth;
-        optimalMoves = new HashMap<Integer, ArrayList<String>>();
-        action = "";
-        maxUtility = Integer.MIN_VALUE;
-        earlyStop = false;
-        startTime = System.currentTimeMillis();
-
-        learning = true;
-        maxValue(state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
-        learning = false;
-
-        if (earlyStop) {
-            return;
-        }
-
-        if (Minimax.random) {
-            int size = optimalMoves.get(maxUtility).size();
-            String action = optimalMoves.get(maxUtility).get(rng.nextInt(size));
-            learner.applyAction(action);
-        } else {
-            learner.applyAction(action);
-        }
-    }
 
     public static String search(State state, int maxDepth) {
         Minimax.maxDepth = maxDepth;
@@ -78,16 +49,13 @@ class Minimax {
         }
 
         if (state.isTerminal() || depth == maxDepth) {
-            if (learning) {
-                learner.writeToFile(state, state.getUtility());
-            }
             return state.getUtility();
         }
 
         v = Integer.MIN_VALUE;
         oldRow = state.getXRow();
         oldCol = state.getXCol();
-        successors = state.getSuccessors(state.getXRow(), state.getXCol());
+        successors = state.getSuccessors(true);
         for (String move : successors) {
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));
@@ -107,23 +75,14 @@ class Minimax {
             }
             state.revert(true, oldRow, oldCol);
             if (v >= beta) {
-                if (learning) {
-                    learner.writeToFile(state, state.getUtility());
-                }
                 return v;
             }
             alpha = Math.max(alpha, v);
             if (earlyStop) {
-                if (learning) {
-                    learner.writeToFile(state, state.getUtility());
-                }
                 return v;
             }
         }
 
-        if (learning) {
-            learner.writeToFile(state, state.getUtility());
-        }
         return v;
     }
 
@@ -147,7 +106,7 @@ class Minimax {
         v = Integer.MAX_VALUE;
         oldRow = state.getORow();
         oldCol = state.getOCol();
-        successors = state.getSuccessors(state.getORow(), state.getOCol());
+        successors = state.getSuccessors(false);
         for (String move : successors) {
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));
