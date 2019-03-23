@@ -12,28 +12,39 @@ class Engine {
         scanner = new Scanner(System.in);
         ui = new UI(scanner);
         timeLimit = ui.getTimeLimit();
-
+        
         boolean xFirst = ui.getWhoFirst();
         state = new State(xFirst);
-
-        int row, col, turnCount = 0;
-        String compMove, oppMove;
+        
+        int row, col, i, turnCount = 0;
+        String compMove, bestCompMove, oppMove;
         long startTime, runTime;
-
+        
+        ui.printGameState(state, logger);
         if (!xFirst) {
-            ui.printGameState(state, logger);
             oppMove = ui.getOppMove(state.getSuccessors(state.getORow(), state.getOCol()));
             row = Character.getNumericValue(oppMove.charAt(0));
             col = Character.getNumericValue(oppMove.charAt(1));
             state.move(false, row, col);
             logger.log(false, row, col);
-
+            
             ui.printGameState(state, logger);
         }
-
+        
         while (!state.isTerminal()) {
             startTime = System.currentTimeMillis();
-            compMove = Minimax.search(state, 8); // implement iter deepening instead of static 8 depth
+
+            Minimax.timeRemaining = timeLimit;
+            compMove = Minimax.search(state, 7);
+            for (i = 8; i <= 20; i++) {
+                bestCompMove = Minimax.search(state, i);
+                if (!bestCompMove.equals("DNF")) {
+                    compMove = bestCompMove;
+                } else {
+                    break;
+                }
+            }
+
             runTime = System.currentTimeMillis() - startTime;
             ui.printRunTime(runTime);
 

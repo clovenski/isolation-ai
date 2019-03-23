@@ -8,15 +8,24 @@ class Minimax {
     private static Random rng = new Random();
     private static HashMap<Integer, ArrayList<String>> optimalMoves;
     private static int maxUtility;
+    private static boolean earlyStop;
+    private static long startTime;
     public static boolean random = true;
+    public static long timeRemaining;
 
     public static String search(State state, int maxDepth) {
         Minimax.maxDepth = maxDepth;
         optimalMoves = new HashMap<Integer, ArrayList<String>>();
         action = "";
         maxUtility = Integer.MIN_VALUE;
+        earlyStop = false;
+        startTime = System.currentTimeMillis();
 
         maxValue(state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
+
+        if (earlyStop) {
+            return "DNF";
+        }
 
         if (Minimax.random) {
             int size = optimalMoves.get(maxUtility).size();
@@ -30,6 +39,14 @@ class Minimax {
         int v, oldV, row, oldRow, col, oldCol, minResult;
         String oldAction;
         ArrayList<String> successors;
+
+        Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
+        Minimax.startTime = System.currentTimeMillis();
+
+        if (Minimax.timeRemaining <= 500L) {
+            earlyStop = true;
+            return Integer.MIN_VALUE;
+        }
 
         if (state.isTerminal() || depth == maxDepth) {
             return state.getUtility();
@@ -61,6 +78,9 @@ class Minimax {
                 return v;
             }
             alpha = Math.max(alpha, v);
+            if (earlyStop) {
+                return v;
+            }
         }
 
         return v;
@@ -70,6 +90,14 @@ class Minimax {
         int v, oldV, row, oldRow, col, oldCol;
         String oldAction;
         ArrayList<String> successors;
+
+        Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
+        Minimax.startTime = System.currentTimeMillis();
+
+        if (Minimax.timeRemaining <= 500L) {
+            earlyStop = true;
+            return Integer.MAX_VALUE;
+        }
 
         if (state.isTerminal() || depth == maxDepth) {
             return state.getUtility();
@@ -97,6 +125,9 @@ class Minimax {
                 return v;
             }
             beta = Math.min(beta, v);
+            if (earlyStop) {
+                return v;
+            }
         }
 
         return v;

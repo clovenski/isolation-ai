@@ -15,15 +15,29 @@ class Project3 {
         UI ui = new UI(scanner);
         ui.printGameState(state, logger);
 
-        int row, col;
-        String compMove, oppMove;
+        int row, col, i, bestDepth;
+        String compMove, bestCompMove, oppMove;
         long startTime, runTime;
 
         while (!state.isTerminal()) {
             startTime = System.currentTimeMillis();
-            compMove = Minimax.search(state, 8);
+
+            Minimax.timeRemaining = 20000L;
+            compMove = Minimax.search(state, 7);
+            bestDepth = 7;
+            for (i = 8; i <= 20; i++) {
+                bestCompMove = Minimax.search(state, i);
+                if (!bestCompMove.equals("DNF")) {
+                    compMove = bestCompMove;
+                    bestDepth = i;
+                } else {
+                    break;
+                }
+            }
+
             runTime = System.currentTimeMillis() - startTime;
             ui.printRunTime(runTime);
+            System.out.println("Best depth: " + bestDepth + "\n");
 
             row = Character.getNumericValue(compMove.charAt(0));
             col = Character.getNumericValue(compMove.charAt(1));
