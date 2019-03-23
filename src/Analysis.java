@@ -1,65 +1,117 @@
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+
 class Analysis {
-    public static int getSpaceWeight(int i, int j) {
-        int weight;
-        
-        weight = 14;
-        for (int k = 0; k < 4; k++) {
-            weight += countDiag(i, j, k);
+    public void analyze() {
+        State state = new State(true);
+        Logger logger = new Logger();
+        Scanner scanner = new Scanner(System.in);
+        UI ui = new UI(scanner);
+        ui.printGameState(state, logger);
+
+        state.setAgentX(new Agent(state, new Heuristic(){
+            public int computeUtility(State state, int xMoves, int oMoves) {
+                return xMoves - oMoves - oMoves;
+            }
+        }));
+
+        state.setAgentO(new Agent(state, new Heuristic(){
+            public int computeUtility(State state, int xMoves, int oMoves) {
+                return oMoves - xMoves;
+            }
+        }));
+
+        int row, col, i, bestDepth, turnCount = 0;
+        String compMove, bestCompMove, oppMove, bestOppMove;
+        long startTime, runTime;
+
+        while (!state.isTerminal()) {
+            startTime = System.currentTimeMillis();
+
+            Minimax.timeRemaining = 20000L;
+            compMove = Minimax.search(true, state, 7);
+            if (compMove.equals("DNF") || compMove.equals("")) {
+                compMove = getOppRandMove(false, state);
+                bestDepth = 0;
+            } else {
+                bestDepth = 7;
+                for (i = 8; i <= 40; i++) {
+                    bestCompMove = Minimax.search(true, state, i);
+                    if (!bestCompMove.equals("DNF") && !bestCompMove.equals("")) {
+                        compMove = bestCompMove;
+                        bestDepth = i;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            runTime = System.currentTimeMillis() - startTime;
+            ui.printRunTime(runTime);
+            System.out.println("Best depth: " + bestDepth);
+
+            row = Character.getNumericValue(compMove.charAt(0));
+            col = Character.getNumericValue(compMove.charAt(1));
+            state.move(true, row, col);
+            logger.log(true, row, col);
+
+            ui.printGameState(state, logger);
+
+            if (state.isTerminal()) {
+                break;
+            }
+            
+            startTime = System.currentTimeMillis();
+
+            Minimax.timeRemaining = 20000L;
+            oppMove = Minimax.search(false, state, 7);
+            if (oppMove.equals("DNF") || oppMove.equals("")) {
+                oppMove = getOppRandMove(true, state);
+                bestDepth = 0;
+            } else {
+                bestDepth = 7;
+                for (i = 8; i <= 40; i++) {
+                    bestOppMove = Minimax.search(false, state, i);
+                    if (!bestOppMove.equals("DNF") && !bestOppMove.equals("")) {
+                        oppMove = bestOppMove;
+                        bestDepth = i;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            runTime = System.currentTimeMillis() - startTime;
+            ui.printRunTime(runTime);
+            System.out.println("Best depth: " + bestDepth);
+
+            row = Character.getNumericValue(oppMove.charAt(0));
+            col = Character.getNumericValue(oppMove.charAt(1));
+            state.move(false, row, col);
+            logger.log(false, row, col);
+            if (turnCount < 2) {
+                turnCount++;
+                Minimax.random = turnCount < 2;
+            }
+
+            ui.printGameState(state, logger);
         }
-        
-        return weight;
+
+        ui.printWinner(state.getWinner());
+
+        scanner.close();
     }
-    
-    public static int countDiag(int i, int j, int axis) {
-        int count = 0;
-        switch (axis) {
-            case 0:
-            while (i + 1 < 8 && j + 1 < 8) {
-                count++;
-                i++;
-                j++;
-            }
-            break;
-            case 1:
-            while (i + 1 < 8 && j - 1 >= 0) {
-                count++;
-                i++;
-                j--;
-            }
-            break;
-            case 2:
-            while (i - 1 >= 0 && j - 1 >= 0) {
-                count++;
-                i--;
-                j--;
-            }
-            break;
-            case 3:
-            while (i - 1 >= 0 && j + 1 < 8) {
-                count++;
-                i--;
-                j++;
-            }
-            break;
-        }
-        return count;
+
+    private String getOppRandMove(boolean forX, State state) {
+        Random rng = new Random();
+        ArrayList<String> successors = state.getSuccessors(!forX);
+
+        return successors.get(rng.nextInt(successors.size()));
     }
 
     public static void main(String[] args) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.printf("%2d ", getSpaceWeight(i, j));
-            }
-            System.out.println();
-        }
-
-        System.out.println();
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                System.out.printf("%2s ", Integer.toString(i) + Integer.toString(j));
-            }
-            System.out.println();
-        }
+        Analysis analysis = new Analysis();
+        analysis.analyze();
     }
 }

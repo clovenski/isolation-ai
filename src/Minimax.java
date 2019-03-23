@@ -13,7 +13,7 @@ class Minimax {
     public static boolean random = true;
     public static long timeRemaining;
 
-    public static String search(State state, int maxDepth) {
+    public static String search(boolean forAgentX, State state, int maxDepth) {
         Minimax.maxDepth = maxDepth;
         optimalMoves = new HashMap<Integer, ArrayList<String>>();
         action = "";
@@ -21,21 +21,26 @@ class Minimax {
         earlyStop = false;
         startTime = System.currentTimeMillis();
 
-        maxValue(state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
+        maxValue(forAgentX, state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
 
         if (earlyStop) {
             return "DNF";
         }
 
         if (Minimax.random) {
-            int size = optimalMoves.get(maxUtility).size();
-            return optimalMoves.get(maxUtility).get(rng.nextInt(size));
+            int size;
+            try {
+                size = optimalMoves.get(maxUtility).size();
+                return optimalMoves.get(maxUtility).get(rng.nextInt(size));
+            } catch (NullPointerException e) {
+                return action;
+            }
         } else {
             return action;
         }
     }
 
-    private static int maxValue(State state, int alpha, int beta, int depth) {
+    private static int maxValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
         int v, oldV, row, oldRow, col, oldCol, minResult;
         String oldAction;
         ArrayList<String> successors;
@@ -45,25 +50,25 @@ class Minimax {
 
         if (Minimax.timeRemaining <= 500L) {
             earlyStop = true;
-            return Integer.MIN_VALUE;
+            return state.getUtility(forAgentX);
         }
 
         if (state.isTerminal() || depth == maxDepth) {
-            return state.getUtility();
+            return state.getUtility(forAgentX);
         }
 
         v = Integer.MIN_VALUE;
-        oldRow = state.getXRow();
-        oldCol = state.getXCol();
-        successors = state.getSuccessors(true);
+        oldRow = forAgentX ? state.getXRow() : state.getORow();
+        oldCol = forAgentX ? state.getXCol() : state.getOCol();
+        successors = state.getSuccessors(forAgentX);
         for (String move : successors) {
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));
             oldV = v;
             oldAction = action;
 
-            state.move(true, row, col);
-            minResult = minValue(state, alpha, beta, depth + 1);
+            state.move(forAgentX, row, col);
+            minResult = minValue(forAgentX, state, alpha, beta, depth + 1);
             v = Math.max(v, minResult);
             if (v == oldV) {
                 action = oldAction;
@@ -73,7 +78,7 @@ class Minimax {
             if (depth == 0 && oldV <= minResult) {
                 updateOptimals(v, move);
             }
-            state.revert(true, oldRow, oldCol);
+            state.revert(forAgentX, oldRow, oldCol);
             if (v >= beta) {
                 return v;
             }
@@ -86,7 +91,7 @@ class Minimax {
         return v;
     }
 
-    private static int minValue(State state, int alpha, int beta, int depth) {
+    private static int minValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
         int v, oldV, row, oldRow, col, oldCol;
         String oldAction;
         ArrayList<String> successors;
@@ -96,31 +101,31 @@ class Minimax {
 
         if (Minimax.timeRemaining <= 500L) {
             earlyStop = true;
-            return Integer.MAX_VALUE;
+            return state.getUtility(forAgentX);
         }
 
         if (state.isTerminal() || depth == maxDepth) {
-            return state.getUtility();
+            return state.getUtility(forAgentX);
         }
 
         v = Integer.MAX_VALUE;
-        oldRow = state.getORow();
-        oldCol = state.getOCol();
-        successors = state.getSuccessors(false);
+        oldRow = forAgentX ? state.getORow() : state.getXRow();
+        oldCol = forAgentX ? state.getOCol() : state.getXCol();
+        successors = state.getSuccessors(!forAgentX);
         for (String move : successors) {
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));
             oldV = v;
             oldAction = action;
 
-            state.move(false, row, col);
-            v = Math.min(v, maxValue(state, alpha, beta, depth + 1));
+            state.move(!forAgentX, row, col);
+            v = Math.min(v, maxValue(forAgentX, state, alpha, beta, depth + 1));
             if (v == oldV) {
                 action = oldAction;
             } else {
                 action = move;
             }
-            state.revert(false, oldRow, oldCol);
+            state.revert(!forAgentX, oldRow, oldCol);
             if (v <= alpha) {
                 return v;
             }

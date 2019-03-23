@@ -1,15 +1,19 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 class State {
     private char[][] board;
-    private int utility;
+    private Agent agentX;
+    private Agent agentO;
+    private int utilityX;
+    private int utilityO;
     private int xRow;
     private int xCol;
     private int oRow;
     private int oCol;
+    private int xMoves;
+    private int oMoves;
     private String winner;
     private HashMap<Integer, int[][]> axisOffsets;
 
@@ -23,12 +27,16 @@ class State {
             }
         }
 
-        utility = 0;
+        utilityX = utilityO = 0;
+
+        agentX = null;
+        agentO = null;
 
         board[0][0] = xTop ? 'X' : 'O';
         board[7][7] = xTop ? 'O' : 'X';
         xRow = xCol = xTop ? 0 : 7;
         oRow = oCol = xTop ? 7 : 0;
+        xMoves = oMoves = 20;
 
         winner = "None";
 
@@ -45,12 +53,19 @@ class State {
             }
         }
 
-        utility = otherState.utility;
+        utilityX = otherState.utilityX;
+        utilityO = otherState.utilityO;
+
+        agentX = otherState.agentX;
+        agentO = otherState.agentO;
 
         xRow = otherState.xRow;
         xCol = otherState.xCol;
         oRow = otherState.oRow;
         oCol = otherState.oCol;
+        xMoves = otherState.xMoves;
+        oMoves = otherState.oMoves;
+
         winner = otherState.winner;
 
         initOffsets();
@@ -119,28 +134,22 @@ class State {
         // end initOffsets
     }
 
-    private LinkedList<Integer> getAxisOrder(int row, int col) {
-        // get order in which to check axes
+    public void setAgentX(Agent agent) {
+        agentX = agent;
+    }
 
-        // simplified axis ordering: clockwise from up
-        int[] temp = new int[] {0, 1, 2, 3, 4, 5, 6, 7};
-        LinkedList<Integer> order = new LinkedList<Integer>();
-        for (int i : temp) {
-            order.add(i);
-        }
-        return order;
+    public void setAgentO(Agent agent) {
+        agentO = agent;
     }
 
     public ArrayList<String> getSuccessors(boolean ofX) {
         ArrayList<String> successors = new ArrayList<String>(27);
-        int i, row, col, rowOffset, colOffset;
-        LinkedList<Integer> axisOrder;
+        int i, axis, row, col, rowOffset, colOffset;
 
         row = ofX ? xRow : oRow;
         col = ofX ? xCol : oCol;
-        axisOrder = getAxisOrder(row, col);
 
-        for (Integer axis : axisOrder) {
+        for (axis = 0; axis < 8; axis++) {
             for (i = 0; i < 8; i++) {
                 try {
                     rowOffset = axisOffsets.get(axis)[0][i];
@@ -156,20 +165,35 @@ class State {
             }
         }
 
-        successors.sort(new State.SuccessorComp());
+        successors.sort(new State.SuccessorComp(ofX));
 
         return successors;
     }
 
     private class SuccessorComp implements Comparator<String> {
+        private boolean forX;
+
+        public SuccessorComp(boolean forX) {
+            this.forX = forX;
+        }
+
         public int compare(String s1, String s2) {
             int s1Row = s1.charAt(0);
             int s1Col = s1.charAt(1);
             int s2Row = s2.charAt(0);
             int s2Col = s2.charAt(1);
 
-            double dist1 = distFromCenter(s1Row, s1Col);
-            double dist2 = distFromCenter(s2Row, s2Col);
+            double dist1;
+            double dist2;
+
+            if ((forX && oMoves < xMoves) || (!forX && xMoves < oMoves)) {
+                dist1 = distFromOpp(forX, s1Row, s1Col);
+                dist2 = distFromOpp(forX, s2Row, s2Col);
+            } else {
+                dist1 = distFromCenter(s1Row, s1Col);
+                dist2 = distFromCenter(s2Row, s2Col);
+            }
+
 
             if (dist1 < dist2) {
                 return 1;
@@ -180,9 +204,35 @@ class State {
             }
         }
 
+        private double distFromOpp(boolean forX, int row, int col) {
+            int oppRow, oppCol;
+            oppRow = forX ? oRow : xRow;
+            oppCol = forX ? oCol : xCol;
+
+            return Math.abs(row - oppRow) + Math.abs(col - oppCol);
+        }
+
         private double distFromCenter(int row, int col) {
             return Math.abs(row - 3.5) + Math.abs(col - 3.5);
         }
+    }
+
+    public int numLocalMoves(int row, int col) {
+        int rowOffset, colOffset, count = 0;
+
+        for (int i = 0; i < 8; i++) {
+            try {
+                rowOffset = axisOffsets.get(i)[0][0];
+                colOffset = axisOffsets.get(i)[1][0];
+                if (board[row + rowOffset][col + colOffset] == '-') {
+                    count++;
+                }
+            } catch (IndexOutOfBoundsException e) {
+                break;
+            }
+        }
+
+        return count;
     }
 
     public int getXRow() {
@@ -217,7 +267,7 @@ class State {
             oCol = col;
         }
 
-        computeUtility();
+        computeUtility(movingX);
     }
 
     // revert back to row, col
@@ -236,11 +286,11 @@ class State {
             oCol = col;
         }
 
-        computeUtility();
+        computeUtility(movingX);
     }
 
-    private void computeUtility() {
-        int i, j, rowOffset, colOffset, xMoves, oMoves;
+    private void computeUtility(boolean forX) {
+        int i, j, rowOffset, colOffset;
         xMoves = oMoves = 0;
 
         for (i = 0; i < 8; i++) {
@@ -274,13 +324,26 @@ class State {
                 }
             }
         }
-        // improve this utility evaluation
-        if (xMoves == 0) {
-            utility = Integer.MIN_VALUE;
-        } else if (oMoves == 0) {
-            utility = Integer.MAX_VALUE;
+
+        if (forX) {
+            if (xMoves == 0) {
+                utilityX = Integer.MIN_VALUE;
+            } else if (oMoves == 0) {
+                utilityX = Integer.MAX_VALUE;
+            } else {
+                utilityX = agentX.utilityFunc(xMoves, oMoves);
+            }
+
         } else {
-            utility = 27 + xMoves - 2 * oMoves;
+            if (oMoves == 0) {
+                utilityO = Integer.MIN_VALUE;
+            } else if (xMoves == 0) {
+                utilityO = Integer.MAX_VALUE;
+            } else if (agentO != null) {
+                utilityO = agentO.utilityFunc(xMoves, oMoves);
+            } else {
+                utilityO = 0;
+            }
         }
     }
 
@@ -324,8 +387,8 @@ class State {
         return true;
     }
 
-    public int getUtility() {
-        return utility;
+    public int getUtility(boolean ofX) {
+        return ofX ? utilityX : utilityO;
     }
 
     public String getWinner() {

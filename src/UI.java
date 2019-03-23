@@ -12,8 +12,9 @@ class UI {
     }
 
     public void printGameState(State state, Logger logger) {
-        // print current game board state along with moves log
         String[] movesLog = logger.getMovesLog();
+
+        System.out.println();
 
         System.out.println(COL_HEADER + "    Computer vs. Opponent");
         for (int i = 0; i < 8; i++) {
@@ -36,12 +37,12 @@ class UI {
         String oppChoice;
 
         while (true) {
-            System.out.print("Enter opponent's move: ");
+            System.out.print("\nEnter opponent's move: ");
 
             oppChoice = scanner.nextLine().toUpperCase();
 
             if (!oppChoice.matches("[A-H][1-8]")) {
-                System.err.println("INVALID INPUT");
+                System.err.print("INVALID INPUT");
                 continue;
             }
 
@@ -49,9 +50,8 @@ class UI {
                         + (Character.getNumericValue(oppChoice.charAt(1)) - 1);
 
             if (!choices.contains(oppChoice)) {
-                System.err.println("INVALID CHOICE");
+                System.err.print("INVALID CHOICE");
             } else {
-                System.out.println();
                 break;
             }
         }
@@ -62,11 +62,11 @@ class UI {
     public void printCompMove(int row, int col) {
         String move = ROW_MAPPING[row] + Integer.toString(col + 1);
 
-        System.out.println("\nComputer's move is: " + move + "\n");
+        System.out.println("\nComputer's move is: " + move);
     }
 
     public void printRunTime(long runTime) {
-        System.out.printf("\nMinimax Run Time: %.3f seconds\n\n", runTime / 1000.0);
+        System.out.printf("\nMinimax Run Time: %.3f seconds\n", runTime / 1000.0);
     }
 
     public boolean getWhoFirst() {
