@@ -111,7 +111,14 @@ class Minimax {
             optimalMoves.put(v, moves);
             maxUtility = v;
         } else {
-            optimalMoves.get(v).add(move);
+            try {
+                optimalMoves.get(v).add(move);
+            } catch (NullPointerException e) {
+                moves = new ArrayList<String>();
+                moves.add(move);
+                optimalMoves.put(v, moves);
+                maxUtility = v;
+            }
         }
     }
 }

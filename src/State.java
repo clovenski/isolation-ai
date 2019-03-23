@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -151,7 +152,33 @@ class State {
             }
         }
 
+        successors.sort(new State.SuccessorComp());
+
         return successors;
+    }
+
+    private static class SuccessorComp implements Comparator<String> {
+        public int compare(String s1, String s2) {
+            int s1Row = s1.charAt(0);
+            int s1Col = s1.charAt(1);
+            int s2Row = s2.charAt(0);
+            int s2Col = s2.charAt(1);
+
+            double dist1 = distFromCenter(s1Row, s1Col);
+            double dist2 = distFromCenter(s2Row, s2Col);
+
+            if (dist1 < dist2) {
+                return 1;
+            } else if (dist1 > dist2) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+
+        private double distFromCenter(int row, int col) {
+            return Math.sqrt(Math.pow(row - 3.5, 2) + Math.pow(col - 3.5, 2));
+        }
     }
 
     public int getXRow() {
@@ -244,7 +271,13 @@ class State {
             }
         }
         // improve this utility evaluation
-        utility = xMoves - oMoves;
+        if (xMoves == 0) {
+            utility = Integer.MIN_VALUE;
+        } else if (oMoves == 0) {
+            utility = Integer.MAX_VALUE;
+        } else {
+            utility = 27 + xMoves - 2 * oMoves;
+        }
     }
 
     public boolean isTerminal() {
