@@ -332,6 +332,19 @@ class State {
         return new State(this);
     }
 
+    public char[] toCharArray() {
+        char[] array = new char[64];
+        int index = 0;
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                array[index++] = board[i][j];
+            }
+        }
+
+        return array;
+    }
+
     public String toString(int row) {
         String result = "";
 

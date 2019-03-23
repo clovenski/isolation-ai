@@ -54,7 +54,7 @@ class Engine {
             logger.log(true, row, col);
             if (turnCount < 2) {
                 turnCount++;
-                Minimax.random = turnCount < 5;
+                Minimax.random = turnCount < 2;
             }
 
             ui.printGameState(state, logger);
