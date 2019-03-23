@@ -195,9 +195,9 @@ class State {
             }
 
 
-            if (dist1 < dist2) {
+            if (dist1 > dist2) {
                 return 1;
-            } else if (dist1 > dist2) {
+            } else if (dist1 < dist2) {
                 return -1;
             } else {
                 return 0;
