@@ -4,10 +4,14 @@ class Logger {
     private ArrayList<String> compMoves;
     private ArrayList<String> oppMoves;
     private final char[] ROW_MAPPING = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
+    private int xWinCount;
+    private int totalGames;
 
     public Logger() {
         compMoves = new ArrayList<String>();
         oppMoves = new ArrayList<String>();
+
+        xWinCount = totalGames = 0;
     }
 
     public void log(boolean compMove, int row, int col) {
@@ -18,6 +22,26 @@ class Logger {
         } else {
             oppMoves.add(move);
         }
+    }
+
+    public void logGame(boolean xWon) {
+        if (xWon) {
+            xWinCount++;
+        }
+
+        totalGames++;
+    }
+
+    public int getXWinCount() {
+        return xWinCount;
+    }
+
+    public int getOWinCount() {
+        return totalGames - xWinCount;
+    }
+
+    public int getTotalGames() {
+        return totalGames;
     }
 
     public String[] getMovesLog() {
@@ -47,7 +71,11 @@ class Logger {
 
         }
 
-
         return movesLog;
+    }
+
+    public void resetMovesLog() {
+        compMoves.clear();
+        oppMoves.clear();
     }
 }

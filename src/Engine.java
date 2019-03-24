@@ -21,11 +21,11 @@ class Engine {
         Agent agentX = initAgent();
 
         state.setAgentX(agentX);
-        
+
         int row, col, i, turnCount = 0;
         String compMove, bestCompMove, oppMove;
         long startTime, runTime;
-        
+
         ui.printGameState(state, logger);
         if (!xFirst) {
             oppMove = ui.getOppMove(state.getSuccessors(false));
@@ -33,10 +33,10 @@ class Engine {
             col = Character.getNumericValue(oppMove.charAt(1));
             state.move(false, row, col);
             logger.log(false, row, col);
-            
+
             ui.printGameState(state, logger);
         }
-        
+
         while (!state.isTerminal()) {
             startTime = System.currentTimeMillis();
 

@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-java -cp '.;bin' Analysis
+java -cp '.;bin' Analysis "$@"

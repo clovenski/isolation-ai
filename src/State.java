@@ -8,6 +8,7 @@ class State {
     private Agent agentO;
     private int utilityX;
     private int utilityO;
+    private boolean xTop;
     private int xRow;
     private int xCol;
     private int oRow;
@@ -28,6 +29,8 @@ class State {
         }
 
         utilityX = utilityO = 0;
+
+        this.xTop = xTop;
 
         agentX = null;
         agentO = null;
@@ -55,6 +58,8 @@ class State {
 
         utilityX = otherState.utilityX;
         utilityO = otherState.utilityO;
+
+        xTop = otherState.xTop;
 
         agentX = otherState.agentX;
         agentO = otherState.agentO;
@@ -397,6 +402,26 @@ class State {
 
     public State getCopy() {
         return new State(this);
+    }
+
+    public void reset() {
+        int i, j;
+
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                board[i][j] = '-';
+            }
+        }
+
+        utilityX = utilityO = 0;
+
+        board[0][0] = xTop ? 'X' : 'O';
+        board[7][7] = xTop ? 'O' : 'X';
+        xRow = xCol = xTop ? 0 : 7;
+        oRow = oCol = xTop ? 7 : 0;
+        xMoves = oMoves = 20;
+
+        winner = "None";
     }
 
     public char[] toCharArray() {

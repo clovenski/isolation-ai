@@ -111,4 +111,10 @@ class UI {
 
         System.out.println(winner + " is winner!");
     }
+
+    public void printStatistics(Logger logger) {
+        System.out.printf("X won: %2d games\n", logger.getXWinCount());
+        System.out.printf("O won: %2d games\n", logger.getOWinCount());
+        System.out.printf("Total: %2d games\n", logger.getTotalGames());
+    }
 }
