@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 
 class State {
     private char[][] board;
@@ -16,7 +15,40 @@ class State {
     private int xMoves;
     private int oMoves;
     private String winner;
-    private HashMap<Integer, int[][]> axisOffsets;
+    public static final int[][][] AXIS_OFFSETS = {
+        { // axis 0: up
+            {-1, -2, -3, -4, -5, -6, -7},
+            {0, 0, 0, 0, 0, 0, 0}
+        },
+        { // axis 1: up-right
+            {-1, -2, -3, -4, -5, -6, -7},
+            {1, 2, 3, 4, 5, 6, 7}
+        },
+        { // axis 2: right
+            {0, 0, 0, 0, 0, 0, 0},
+            {1, 2, 3, 4, 5, 6, 7}
+        },
+        { // axis 3: down-right
+            {1, 2, 3, 4, 5, 6, 7},
+            {1, 2, 3, 4, 5, 6, 7}
+        },
+        { // axis 4: down
+            {1, 2, 3, 4, 5, 6, 7},
+            {0, 0, 0, 0, 0, 0, 0}
+        },
+        { // axis 5: down-left
+            {1, 2, 3, 4, 5, 6, 7},
+            {-1, -2, -3, -4, -5, -6, -7}
+        },
+        { // axis 6: left
+            {0, 0, 0, 0, 0, 0, 0},
+            {-1, -2, -3, -4, -5, -6, -7}
+        },
+        { // axis 7: up-left
+            {-1, -2, -3, -4, -5, -6, -7},
+            {-1, -2, -3, -4, -5, -6, -7}
+        }
+    };
 
     public State(boolean xTop) {
         int i, j;
@@ -42,8 +74,6 @@ class State {
         xMoves = oMoves = 20;
 
         winner = "None";
-
-        initOffsets();
     }
 
     public State(State otherState) {
@@ -72,71 +102,6 @@ class State {
         oMoves = otherState.oMoves;
 
         winner = otherState.winner;
-
-        initOffsets();
-    }
-
-    private void initOffsets() {
-        int[][] offsets;
-        axisOffsets = new HashMap<Integer, int[][]>();
-
-        // axis 0: up
-        offsets = new int[][] {
-            {-1, -2, -3, -4, -5, -6, -7},
-            {0, 0, 0, 0, 0, 0, 0}
-        };
-        axisOffsets.put(0, offsets);
-
-        // axis 1: up-right
-        offsets = new int[][] {
-            {-1, -2, -3, -4, -5, -6, -7},
-            {1, 2, 3, 4, 5, 6, 7}
-        };
-        axisOffsets.put(1, offsets);
-
-        // axis 2: right
-        offsets = new int[][] {
-            {0, 0, 0, 0, 0, 0, 0},
-            {1, 2, 3, 4, 5, 6, 7}
-        };
-        axisOffsets.put(2, offsets);
-
-        // axis 3: down-right
-        offsets = new int[][] {
-            {1, 2, 3, 4, 5, 6, 7},
-            {1, 2, 3, 4, 5, 6, 7}
-        };
-        axisOffsets.put(3, offsets);
-
-        // axis 4: down
-        offsets = new int[][] {
-            {1, 2, 3, 4, 5, 6, 7},
-            {0, 0, 0, 0, 0, 0, 0}
-        };
-        axisOffsets.put(4, offsets);
-
-        // axis 5: down-left
-        offsets = new int[][] {
-            {1, 2, 3, 4, 5, 6, 7},
-            {-1, -2, -3, -4, -5, -6, -7}
-        };
-        axisOffsets.put(5, offsets);
-
-        // axis 6: left
-        offsets = new int[][] {
-            {0, 0, 0, 0, 0, 0, 0},
-            {-1, -2, -3, -4, -5, -6, -7}
-        };
-        axisOffsets.put(6, offsets);
-
-        // axis 7: up-left
-        offsets = new int[][] {
-            {-1, -2, -3, -4, -5, -6, -7},
-            {-1, -2, -3, -4, -5, -6, -7}
-        };
-        axisOffsets.put(7, offsets);
-
-        // end initOffsets
     }
 
     public void setAgentX(Agent agent) {
@@ -157,8 +122,8 @@ class State {
         for (axis = 0; axis < 8; axis++) {
             for (i = 0; i < 8; i++) {
                 try {
-                    rowOffset = axisOffsets.get(axis)[0][i];
-                    colOffset = axisOffsets.get(axis)[1][i];
+                    rowOffset = State.AXIS_OFFSETS[axis][0][i];
+                    colOffset = State.AXIS_OFFSETS[axis][1][i];
                     if (board[row + rowOffset][col + colOffset] == '-') {
                         successors.add(Integer.toString(row + rowOffset) + Integer.toString(col + colOffset));
                     } else {
@@ -227,8 +192,8 @@ class State {
 
         for (int i = 0; i < 8; i++) {
             try {
-                rowOffset = axisOffsets.get(i)[0][0];
-                colOffset = axisOffsets.get(i)[1][0];
+                rowOffset = State.AXIS_OFFSETS[i][0][0];
+                colOffset = State.AXIS_OFFSETS[i][1][0];
                 if (board[row + rowOffset][col + colOffset] == '-') {
                     count++;
                 }
@@ -301,8 +266,8 @@ class State {
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
                 try {
-                    rowOffset = axisOffsets.get(i)[0][j];
-                    colOffset = axisOffsets.get(i)[1][j];
+                    rowOffset = State.AXIS_OFFSETS[i][0][j];
+                    colOffset = State.AXIS_OFFSETS[i][1][j];
                     if (board[xRow + rowOffset][xCol + colOffset] == '-') {
                         xMoves++;
                     } else {
@@ -317,8 +282,8 @@ class State {
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
                 try {
-                    rowOffset = axisOffsets.get(i)[0][j];
-                    colOffset = axisOffsets.get(i)[1][j];
+                    rowOffset = State.AXIS_OFFSETS[i][0][j];
+                    colOffset = State.AXIS_OFFSETS[i][1][j];
                     if (board[oRow + rowOffset][oCol + colOffset] == '-') {
                         oMoves++;
                     } else {
@@ -360,8 +325,8 @@ class State {
 
         for (i = 0; i < 8; i++) {
             try {
-                rowOffset = axisOffsets.get(i)[0][0];
-                colOffset = axisOffsets.get(i)[1][0];
+                rowOffset = State.AXIS_OFFSETS[i][0][0];
+                colOffset = State.AXIS_OFFSETS[i][1][0];
                 if (board[xRow + rowOffset][xCol + colOffset] == '-') {
                     xFree = true;
                     break;
@@ -378,8 +343,8 @@ class State {
 
         for (i = 0; i < 8; i++) {
             try {
-                rowOffset = axisOffsets.get(i)[0][0];
-                colOffset = axisOffsets.get(i)[1][0];
+                rowOffset = State.AXIS_OFFSETS[i][0][0];
+                colOffset = State.AXIS_OFFSETS[i][1][0];
                 if (board[oRow + rowOffset][oCol + colOffset] == '-') {
                     return false;
                 }

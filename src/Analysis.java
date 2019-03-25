@@ -10,12 +10,14 @@ class Analysis {
         UI ui = new UI(scanner);
         ui.printGameState(state, logger);
 
+        // define agent X heuristic
         state.setAgentX(new Agent(state, new Heuristic(){
             public int computeUtility(State state, int xMoves, int oMoves) {
                 return xMoves - oMoves;
             }
         }));
 
+        // define agent O heuristic
         state.setAgentO(new Agent(state, new Heuristic(){
             public int computeUtility(State state, int xMoves, int oMoves) {
                 return oMoves - xMoves - xMoves;
