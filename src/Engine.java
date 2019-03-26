@@ -18,9 +18,7 @@ class Engine {
         boolean xFirst = ui.getWhoFirst();
         state = new State(xFirst);
 
-        Agent agentX = initAgent();
-
-        state.setAgentX(agentX);
+        state.setAgentX(AgentInitializer.getAgentX(state));
 
         final int START_DEPTH = 8;
         int row, col, i, turnCount = 0;
@@ -29,7 +27,7 @@ class Engine {
 
         ui.printGameState(state, logger);
         if (!xFirst) {
-            oppMove = ui.getOppMove(state.getSuccessors(false));
+            oppMove = ui.getOppMove(state.getSuccessors(false, false));
             row = Character.getNumericValue(oppMove.charAt(0));
             col = Character.getNumericValue(oppMove.charAt(1));
             state.move(false, row, col);
@@ -75,7 +73,7 @@ class Engine {
             }
 
             ui.printCompMove(row, col);
-            oppMove = ui.getOppMove(state.getSuccessors(false));
+            oppMove = ui.getOppMove(state.getSuccessors(false, false));
             row = Character.getNumericValue(oppMove.charAt(0));
             col = Character.getNumericValue(oppMove.charAt(1));
             state.move(false, row, col);
@@ -85,16 +83,6 @@ class Engine {
         ui.printWinner(state.getWinner());
 
         scanner.close();
-    }
-
-    private Agent initAgent() {
-        return new Agent(state, new Heuristic(){
-            public int computeUtility(State state) {
-                int xMoves = state.getNumXMoves();
-                int oMoves = state.getNumOMoves();
-                return xMoves - oMoves - oMoves;
-            }
-        });
     }
 
     private String getRandMove() {

@@ -75,7 +75,7 @@ class Minimax {
         v = Integer.MIN_VALUE;
         oldRow = forAgentX ? state.getXRow() : state.getORow();
         oldCol = forAgentX ? state.getXCol() : state.getOCol();
-        successors = state.getSuccessors(forAgentX);
+        successors = state.getSuccessors(forAgentX, forAgentX);
         for (String move : successors) {
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));
@@ -140,7 +140,7 @@ class Minimax {
         v = Integer.MAX_VALUE;
         oldRow = forAgentX ? state.getORow() : state.getXRow();
         oldCol = forAgentX ? state.getOCol() : state.getXCol();
-        successors = state.getSuccessors(!forAgentX);
+        successors = state.getSuccessors(!forAgentX, forAgentX);
         for (String move : successors) {
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));

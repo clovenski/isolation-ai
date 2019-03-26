@@ -15,13 +15,7 @@ class Project3 {
         UI ui = new UI(scanner);
         ui.printGameState(state, logger);
 
-        state.setAgentX(new Agent(state, new Heuristic(){
-            public int computeUtility(State state) {
-                int xMoves = state.getNumXMoves();
-                int oMoves = state.getNumOMoves();
-                return xMoves - oMoves - oMoves;
-            }
-        }));
+        state.setAgentX(AgentInitializer.getAgentX(state));
 
         final int START_DEPTH = 8;
         int row, col, i, bestDepth, bestUtility, turnCount = 0;

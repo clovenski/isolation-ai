@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 
 class State {
     private char[][] board;
@@ -109,7 +108,7 @@ class State {
         agentO = agent;
     }
 
-    public ArrayList<String> getSuccessors(boolean ofX) {
+    private ArrayList<String> successors(boolean ofX) {
         ArrayList<String> successors = new ArrayList<String>(27);
         int i, axis, row, col, rowOffset, colOffset;
 
@@ -132,72 +131,23 @@ class State {
             }
         }
 
-        successors.sort(new State.SuccessorComp(ofX));
         return successors;
     }
 
-    private class SuccessorComp implements Comparator<String> {
-        private boolean forX;
-
-        public SuccessorComp(boolean forX) {
-            this.forX = forX;
-        }
-
-        public int compare(String s1, String s2) {
-            int s1Row = s1.charAt(0);
-            int s1Col = s1.charAt(1);
-            int s2Row = s2.charAt(0);
-            int s2Col = s2.charAt(1);
-            double dist1;
-            double dist2;
-
-            if ((forX && (oLocalMoves == 1 || oMoves < 5)) || (!forX && (xLocalMoves == 1 || xMoves < 5))) {
-                dist1 = distFromOpp(forX, s1Row, s1Col);
-                dist2 = distFromOpp(forX, s2Row, s2Col);
-            } else {
-                dist1 = distFromCenter(s1Row, s1Col);
-                dist2 = distFromCenter(s2Row, s2Col);
-            }
-
-            if (dist1 > dist2) {
-                return 1;
-            } else if (dist1 < dist2) {
-                return -1;
-            } else {
-                return 0;
-            }
-        }
-
-        private double distFromOpp(boolean forX, int row, int col) {
-            int oppRow, oppCol;
-            oppRow = forX ? oRow : xRow;
-            oppCol = forX ? oCol : xCol;
-            return Math.abs(row - oppRow) + Math.abs(col - oppCol);
-        }
-
-        private double distFromCenter(int row, int col) {
-            return Math.abs(row - 3.5) + Math.abs(col - 3.5);
-        }
+    public ArrayList<String> getSuccessors(boolean ofX) {
+        return successors(ofX);
     }
 
-    private int numLocalMoves(boolean ofX) {
-        int row, col, rowOffset, colOffset, count = 0;
+    public ArrayList<String> getSuccessors(boolean ofX, boolean usingXSorter) {
+        ArrayList<String> successors = successors(ofX);
 
-        row = ofX ? xRow : oRow;
-        col = ofX ? xCol : oCol;
-        for (int i = 0; i < 8; i++) {
-            try {
-                rowOffset = State.AXIS_OFFSETS[i][0][0];
-                colOffset = State.AXIS_OFFSETS[i][1][0];
-                if (board[row + rowOffset][col + colOffset] == '-') {
-                    count++;
-                }
-            } catch (IndexOutOfBoundsException e) {
-                break;
-            }
+        if (usingXSorter) {
+            successors.sort(agentX.getSorter(ofX));
+        } else if (agentO != null) {
+            successors.sort(agentO.getSorter(!ofX));
         }
 
-        return count;
+        return successors;
     }
 
     public int getXRow() {
@@ -308,6 +258,26 @@ class State {
         if (agentO != null) {
             computeUtility(false);
         }
+    }
+
+    private int numLocalMoves(boolean ofX) {
+        int row, col, rowOffset, colOffset, count = 0;
+
+        row = ofX ? xRow : oRow;
+        col = ofX ? xCol : oCol;
+        for (int i = 0; i < 8; i++) {
+            try {
+                rowOffset = State.AXIS_OFFSETS[i][0][0];
+                colOffset = State.AXIS_OFFSETS[i][1][0];
+                if (board[row + rowOffset][col + colOffset] == '-') {
+                    count++;
+                }
+            } catch (IndexOutOfBoundsException e) {
+                break;
+            }
+        }
+
+        return count;
     }
 
     private void computeUtility(boolean forX) {

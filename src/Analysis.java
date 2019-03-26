@@ -10,23 +10,8 @@ class Analysis {
         UI ui = new UI(scanner);
         ui.printGameState(state, logger);
 
-        // define agent X heuristic
-        state.setAgentX(new Agent(state, new Heuristic(){
-            public int computeUtility(State state) {
-                int xMoves = state.getNumXMoves();
-                int oMoves = state.getNumOMoves();
-                return xMoves - oMoves;
-            }
-        }));
-
-        // define agent O heuristic
-        state.setAgentO(new Agent(state, new Heuristic(){
-            public int computeUtility(State state) {
-                int xMoves = state.getNumXMoves();
-                int oMoves = state.getNumOMoves();
-                return oMoves - xMoves - xMoves;
-            }
-        }));
+        state.setAgentX(AgentInitializer.getAgentX(state));
+        state.setAgentO(AgentInitializer.getAgentO(state));
 
         final int START_DEPTH = 8;
         int row, col, i, bestDepth, turnCount = 0;
@@ -116,21 +101,8 @@ class Analysis {
         Scanner scanner = new Scanner(System.in);
         UI ui = new UI(scanner);
 
-        state.setAgentX(new Agent(state, new Heuristic(){
-            public int computeUtility(State state) {
-                int xMoves = state.getNumXMoves();
-                int oMoves = state.getNumOMoves();
-                return xMoves - oMoves;
-            }
-        }));
-
-        state.setAgentO(new Agent(state, new Heuristic(){
-            public int computeUtility(State state) {
-                int xMoves = state.getNumXMoves();
-                int oMoves = state.getNumOMoves();
-                return oMoves - xMoves - xMoves;
-            }
-        }));
+        state.setAgentX(AgentInitializer.getAgentX(state));
+        state.setAgentO(AgentInitializer.getAgentO(state));
 
         int game, row, col, i, startDepth, turnCount = 0;
         String compMove, bestCompMove, oppMove, bestOppMove;
