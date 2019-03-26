@@ -16,7 +16,9 @@ class Project3 {
         ui.printGameState(state, logger);
 
         state.setAgentX(new Agent(state, new Heuristic(){
-            public int computeUtility(State state, int xMoves, int oMoves) {
+            public int computeUtility(State state) {
+                int xMoves = state.getNumXMoves();
+                int oMoves = state.getNumOMoves();
                 return xMoves - oMoves - oMoves;
             }
         }));

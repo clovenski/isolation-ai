@@ -14,6 +14,8 @@ class State {
     private int oCol;
     private int xMoves;
     private int oMoves;
+    private int xLocalMoves;
+    private int oLocalMoves;
     private String winner;
     public static final int[][][] AXIS_OFFSETS = {
         { // axis 0: up
@@ -72,6 +74,7 @@ class State {
         xRow = xCol = xTop ? 0 : 7;
         oRow = oCol = xTop ? 7 : 0;
         xMoves = oMoves = 20;
+        xLocalMoves = oLocalMoves = 3;
 
         winner = "None";
     }
@@ -100,6 +103,8 @@ class State {
         oCol = otherState.oCol;
         xMoves = otherState.xMoves;
         oMoves = otherState.oMoves;
+        xLocalMoves = otherState.xLocalMoves;
+        oLocalMoves = otherState.oLocalMoves;
 
         winner = otherState.winner;
     }
@@ -187,8 +192,11 @@ class State {
         }
     }
 
-    public int numLocalMoves(int row, int col) {
-        int rowOffset, colOffset, count = 0;
+    private int numLocalMoves(boolean ofX) {
+        int row, col, rowOffset, colOffset, count = 0;
+
+        row = ofX ? xRow : oRow;
+        col = ofX ? xCol : oCol;
 
         for (int i = 0; i < 8; i++) {
             try {
@@ -219,6 +227,22 @@ class State {
 
     public int getOCol() {
         return oCol;
+    }
+
+    public int getNumXMoves() {
+        return xMoves;
+    }
+
+    public int getNumOMoves() {
+        return oMoves;
+    }
+
+    public int getNumXLocalMoves() {
+        return xLocalMoves;
+    }
+
+    public int getNumOLocalMoves() {
+        return oLocalMoves;
     }
 
     // move into row, col
@@ -307,6 +331,9 @@ class State {
         int i, j, rowOffset, colOffset;
         xMoves = oMoves = 0;
 
+        xLocalMoves = numLocalMoves(true);
+        oLocalMoves = numLocalMoves(false);
+
         for (i = 0; i < 8; i++) {
             for (j = 0; j < 8; j++) {
                 try {
@@ -345,7 +372,7 @@ class State {
             } else if (oMoves == 0) {
                 utilityX = Integer.MAX_VALUE;
             } else {
-                utilityX = agentX.utilityFunc(xMoves, oMoves);
+                utilityX = agentX.utilityFunc();
             }
 
         } else {
@@ -354,7 +381,7 @@ class State {
             } else if (xMoves == 0) {
                 utilityO = Integer.MAX_VALUE;
             } else if (agentO != null) {
-                utilityO = agentO.utilityFunc(xMoves, oMoves);
+                utilityO = agentO.utilityFunc();
             } else {
                 utilityO = 0;
             }
@@ -429,6 +456,7 @@ class State {
         xRow = xCol = xTop ? 0 : 7;
         oRow = oCol = xTop ? 7 : 0;
         xMoves = oMoves = 20;
+        xLocalMoves = oLocalMoves = 3;
 
         winner = "None";
     }

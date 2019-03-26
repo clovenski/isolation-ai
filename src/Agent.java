@@ -7,7 +7,7 @@ class Agent {
         HEURISTIC = heuristic;
     }
 
-    public int utilityFunc(int xMoves, int oMoves) {
-        return HEURISTIC.computeUtility(STATE, xMoves, oMoves);
+    public int utilityFunc() {
+        return HEURISTIC.computeUtility(STATE);
     }
 }
