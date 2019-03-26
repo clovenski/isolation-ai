@@ -17,7 +17,7 @@ class State {
     private int xLocalMoves;
     private int oLocalMoves;
     private String winner;
-    public static final int[][][] AXIS_OFFSETS = {
+    private static final int[][][] AXIS_OFFSETS = {
         { // axis 0: up
             {-1, -2, -3, -4, -5, -6, -7},
             {0, 0, 0, 0, 0, 0, 0}
@@ -63,19 +63,15 @@ class State {
         }
 
         utilityX = utilityO = 0;
-
         this.xTop = xTop;
-
         agentX = null;
         agentO = null;
-
         board[0][0] = xTop ? 'X' : 'O';
         board[7][7] = xTop ? 'O' : 'X';
         xRow = xCol = xTop ? 0 : 7;
         oRow = oCol = xTop ? 7 : 0;
         xMoves = oMoves = 20;
         xLocalMoves = oLocalMoves = 3;
-
         winner = "None";
     }
 
@@ -91,12 +87,9 @@ class State {
 
         utilityX = otherState.utilityX;
         utilityO = otherState.utilityO;
-
         xTop = otherState.xTop;
-
         agentX = otherState.agentX;
         agentO = otherState.agentO;
-
         xRow = otherState.xRow;
         xCol = otherState.xCol;
         oRow = otherState.oRow;
@@ -105,7 +98,6 @@ class State {
         oMoves = otherState.oMoves;
         xLocalMoves = otherState.xLocalMoves;
         oLocalMoves = otherState.oLocalMoves;
-
         winner = otherState.winner;
     }
 
@@ -141,7 +133,6 @@ class State {
         }
 
         successors.sort(new State.SuccessorComp(ofX));
-
         return successors;
     }
 
@@ -157,18 +148,16 @@ class State {
             int s1Col = s1.charAt(1);
             int s2Row = s2.charAt(0);
             int s2Col = s2.charAt(1);
-
             double dist1;
             double dist2;
 
-            if ((forX && oMoves < 5) || (!forX && xMoves < 5)) {
+            if ((forX && (oLocalMoves == 1 || oMoves < 5)) || (!forX && (xLocalMoves == 1 || xMoves < 5))) {
                 dist1 = distFromOpp(forX, s1Row, s1Col);
                 dist2 = distFromOpp(forX, s2Row, s2Col);
             } else {
                 dist1 = distFromCenter(s1Row, s1Col);
                 dist2 = distFromCenter(s2Row, s2Col);
             }
-
 
             if (dist1 > dist2) {
                 return 1;
@@ -183,7 +172,6 @@ class State {
             int oppRow, oppCol;
             oppRow = forX ? oRow : xRow;
             oppCol = forX ? oCol : xCol;
-
             return Math.abs(row - oppRow) + Math.abs(col - oppCol);
         }
 
@@ -197,7 +185,6 @@ class State {
 
         row = ofX ? xRow : oRow;
         col = ofX ? xCol : oCol;
-
         for (int i = 0; i < 8; i++) {
             try {
                 rowOffset = State.AXIS_OFFSETS[i][0][0];
@@ -250,7 +237,6 @@ class State {
         assert board[row][col] == '-';
 
         board[row][col] = movingX ? 'X' : 'O';
-
         if (movingX) {
             board[xRow][xCol] = '#';
             xRow = row;
@@ -269,7 +255,6 @@ class State {
         assert board[row][col] == '-';
 
         board[row][col] = movingX ? 'X' : 'O';
-
         if (movingX) {
             board[xRow][xCol] = '#';
             xRow = row;
@@ -291,7 +276,6 @@ class State {
         assert board[row][col] == '#';
 
         board[row][col] = movingX ? 'X' : 'O';
-
         if (movingX) {
             board[xRow][xCol] = '-';
             xRow = row;
@@ -310,7 +294,6 @@ class State {
         assert board[row][col] == '#';
 
         board[row][col] = movingX ? 'X' : 'O';
-
         if (movingX) {
             board[xRow][xCol] = '-';
             xRow = row;
@@ -390,9 +373,7 @@ class State {
 
     public boolean isTerminal() {
         int i, rowOffset, colOffset;
-        boolean xFree;
-
-        xFree = false;
+        boolean xFree = false;
 
         for (i = 0; i < 8; i++) {
             try {
@@ -450,14 +431,12 @@ class State {
         }
 
         utilityX = utilityO = 0;
-
         board[0][0] = xTop ? 'X' : 'O';
         board[7][7] = xTop ? 'O' : 'X';
         xRow = xCol = xTop ? 0 : 7;
         oRow = oCol = xTop ? 7 : 0;
         xMoves = oMoves = 20;
         xLocalMoves = oLocalMoves = 3;
-
         winner = "None";
     }
 
