@@ -222,6 +222,25 @@ class State {
     }
 
     // move into row, col
+    public void move(boolean forUtilX, boolean movingX, int row, int col) {
+        assert board[row][col] == '-';
+
+        board[row][col] = movingX ? 'X' : 'O';
+
+        if (movingX) {
+            board[xRow][xCol] = '#';
+            xRow = row;
+            xCol = col;
+        } else {
+            board[oRow][oCol] = '#';
+            oRow = row;
+            oCol = col;
+        }
+
+        computeUtility(forUtilX);
+    }
+
+    // move into row, col; compute utility for both agents
     public void move(boolean movingX, int row, int col) {
         assert board[row][col] == '-';
 
@@ -237,10 +256,32 @@ class State {
             oCol = col;
         }
 
-        computeUtility(movingX);
+        computeUtility(true);
+        if (agentO != null) {
+            computeUtility(false);
+        }
     }
 
     // revert back to row, col
+    public void revert(boolean forUtilX, boolean movingX, int row, int col) {
+        assert board[row][col] == '#';
+
+        board[row][col] = movingX ? 'X' : 'O';
+
+        if (movingX) {
+            board[xRow][xCol] = '-';
+            xRow = row;
+            xCol = col;
+        } else {
+            board[oRow][oCol] = '-';
+            oRow = row;
+            oCol = col;
+        }
+
+        computeUtility(forUtilX);
+    }
+
+    // revert back to row, col; compute utility for both agents
     public void revert(boolean movingX, int row, int col) {
         assert board[row][col] == '#';
 
@@ -256,7 +297,10 @@ class State {
             oCol = col;
         }
 
-        computeUtility(movingX);
+        computeUtility(true);
+        if (agentO != null) {
+            computeUtility(false);
+        }
     }
 
     private void computeUtility(boolean forX) {

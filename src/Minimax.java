@@ -10,6 +10,7 @@ class Minimax {
     private static int maxUtility;
     private static boolean earlyStop;
     private static long startTime;
+    public static int winDepth;
     public static boolean random = true;
     public static long timeRemaining;
 
@@ -21,7 +22,7 @@ class Minimax {
         earlyStop = false;
         startTime = System.currentTimeMillis();
 
-        maxValue(forAgentX, state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
+        maxUtility = maxValue(forAgentX, state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
 
         if (earlyStop) {
             return "DNF";
@@ -41,7 +42,7 @@ class Minimax {
     }
 
     private static int maxValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
-        int v, oldV, row, oldRow, col, oldCol, minResult;
+        int v, oldV, row, oldRow, col, oldCol, minResult, terminalUtil;
         String oldAction;
         ArrayList<String> successors;
 
@@ -50,11 +51,25 @@ class Minimax {
 
         if (Minimax.timeRemaining <= 500L) {
             earlyStop = true;
-            return state.getUtility(forAgentX);
+            terminalUtil = state.getUtility(forAgentX);
+            if (terminalUtil == Integer.MAX_VALUE) {
+                return terminalUtil - depth;
+            } else if (terminalUtil == Integer.MIN_VALUE){
+                return terminalUtil + depth;
+            } else {
+                return terminalUtil;
+            }
         }
 
         if (state.isTerminal() || depth == maxDepth) {
-            return state.getUtility(forAgentX);
+            terminalUtil = state.getUtility(forAgentX);
+            if (terminalUtil == Integer.MAX_VALUE) {
+                return terminalUtil - depth;
+            } else if (terminalUtil == Integer.MIN_VALUE){
+                return terminalUtil + depth;
+            } else {
+                return terminalUtil;
+            }
         }
 
         v = Integer.MIN_VALUE;
@@ -67,7 +82,7 @@ class Minimax {
             oldV = v;
             oldAction = action;
 
-            state.move(forAgentX, row, col);
+            state.move(forAgentX, forAgentX, row, col);
             minResult = minValue(forAgentX, state, alpha, beta, depth + 1);
             v = Math.max(v, minResult);
             if (v == oldV) {
@@ -78,7 +93,7 @@ class Minimax {
             if (depth == 0 && oldV <= minResult) {
                 updateOptimals(v, move);
             }
-            state.revert(forAgentX, oldRow, oldCol);
+            state.revert(forAgentX, forAgentX, oldRow, oldCol);
             if (v >= beta) {
                 return v;
             }
@@ -92,7 +107,7 @@ class Minimax {
     }
 
     private static int minValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
-        int v, oldV, row, oldRow, col, oldCol;
+        int v, oldV, row, oldRow, col, oldCol, terminalUtil;
         String oldAction;
         ArrayList<String> successors;
 
@@ -101,11 +116,25 @@ class Minimax {
 
         if (Minimax.timeRemaining <= 500L) {
             earlyStop = true;
-            return state.getUtility(forAgentX);
+            terminalUtil = state.getUtility(forAgentX);
+            if (terminalUtil == Integer.MAX_VALUE) {
+                return terminalUtil - depth;
+            } else if (terminalUtil == Integer.MIN_VALUE){
+                return terminalUtil + depth;
+            } else {
+                return terminalUtil;
+            }
         }
 
         if (state.isTerminal() || depth == maxDepth) {
-            return state.getUtility(forAgentX);
+            terminalUtil = state.getUtility(forAgentX);
+            if (terminalUtil == Integer.MAX_VALUE) {
+                return terminalUtil - depth;
+            } else if (terminalUtil == Integer.MIN_VALUE){
+                return terminalUtil + depth;
+            } else {
+                return terminalUtil;
+            }
         }
 
         v = Integer.MAX_VALUE;
@@ -118,14 +147,14 @@ class Minimax {
             oldV = v;
             oldAction = action;
 
-            state.move(!forAgentX, row, col);
+            state.move(forAgentX, !forAgentX, row, col);
             v = Math.min(v, maxValue(forAgentX, state, alpha, beta, depth + 1));
             if (v == oldV) {
                 action = oldAction;
             } else {
                 action = move;
             }
-            state.revert(!forAgentX, oldRow, oldCol);
+            state.revert(forAgentX, !forAgentX, oldRow, oldCol);
             if (v <= alpha) {
                 return v;
             }
@@ -156,5 +185,9 @@ class Minimax {
                 maxUtility = v;
             }
         }
+    }
+
+    public static int getMaxUtility() {
+        return maxUtility;
     }
 }

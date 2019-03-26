@@ -21,7 +21,7 @@ class Project3 {
             }
         }));
 
-        int row, col, i, bestDepth, turnCount = 0;
+        int row, col, i, bestDepth, bestUtility, turnCount = 0;
         String compMove, bestCompMove, oppMove;
         long startTime, runTime;
 
@@ -33,13 +33,16 @@ class Project3 {
             if (compMove.equals("DNF") || compMove.equals("")) {
                 compMove = getOppRandMove(false, state);
                 bestDepth = 0;
+                bestUtility = -4200;
             } else {
                 bestDepth = 7;
+                bestUtility = Minimax.getMaxUtility();
                 for (i = 8; i <= 40; i++) {
                     bestCompMove = Minimax.search(true, state, i);
                     if (!bestCompMove.equals("DNF") && !bestCompMove.equals("")) {
                         compMove = bestCompMove;
                         bestDepth = i;
+                        bestUtility = Minimax.getMaxUtility();
                     } else {
                         break;
                     }
@@ -49,6 +52,7 @@ class Project3 {
             runTime = System.currentTimeMillis() - startTime;
             ui.printRunTime(runTime);
             System.out.println("Best depth: " + bestDepth);
+            System.out.println("Best Utility: " + bestUtility);
 
             row = Character.getNumericValue(compMove.charAt(0));
             col = Character.getNumericValue(compMove.charAt(1));
