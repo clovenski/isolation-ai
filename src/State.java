@@ -156,7 +156,7 @@ class State {
             double dist1;
             double dist2;
 
-            if ((forX && oMoves < xMoves) || (!forX && xMoves < oMoves)) {
+            if ((forX && oMoves < 5) || (!forX && xMoves < 5)) {
                 dist1 = distFromOpp(forX, s1Row, s1Col);
                 dist2 = distFromOpp(forX, s2Row, s2Col);
             } else {

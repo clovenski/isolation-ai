@@ -24,6 +24,7 @@ class Analysis {
             }
         }));
 
+        final int START_DEPTH = 8;
         int row, col, i, bestDepth, turnCount = 0;
         String compMove, bestCompMove, oppMove, bestOppMove;
         long startTime, runTime;
@@ -32,13 +33,13 @@ class Analysis {
             startTime = System.currentTimeMillis();
 
             Minimax.timeRemaining = 20000L;
-            compMove = Minimax.search(true, state, 7);
+            compMove = Minimax.search(true, state, START_DEPTH);
             if (compMove.equals("DNF") || compMove.equals("")) {
                 compMove = getOppRandMove(false, state);
                 bestDepth = 0;
             } else {
-                bestDepth = 7;
-                for (i = 8; i <= 40; i++) {
+                bestDepth = START_DEPTH;
+                for (i = START_DEPTH + 1; i <= 40; i++) {
                     bestCompMove = Minimax.search(true, state, i);
                     if (!bestCompMove.equals("DNF") && !bestCompMove.equals("")) {
                         compMove = bestCompMove;
@@ -67,13 +68,13 @@ class Analysis {
             startTime = System.currentTimeMillis();
 
             Minimax.timeRemaining = 20000L;
-            oppMove = Minimax.search(false, state, 7);
+            oppMove = Minimax.search(false, state, START_DEPTH);
             if (oppMove.equals("DNF") || oppMove.equals("")) {
                 oppMove = getOppRandMove(true, state);
                 bestDepth = 0;
             } else {
-                bestDepth = 7;
-                for (i = 8; i <= 40; i++) {
+                bestDepth = START_DEPTH;
+                for (i = START_DEPTH + 1; i <= 40; i++) {
                     bestOppMove = Minimax.search(false, state, i);
                     if (!bestOppMove.equals("DNF") && !bestOppMove.equals("")) {
                         oppMove = bestOppMove;
@@ -123,19 +124,21 @@ class Analysis {
             }
         }));
 
-        int game, row, col, i, turnCount = 0;
+        int game, row, col, i, startDepth, turnCount = 0;
         String compMove, bestCompMove, oppMove, bestOppMove;
+
+        startDepth = 8;
 
         System.out.println("Analyzing multiple games . . .");
         for (game = 1; game <= numGames; game++) {
             System.out.printf("Processing game %d of %d . . .\n", game, numGames);
             while (!state.isTerminal()) {
                 Minimax.timeRemaining = 20000L;
-                compMove = Minimax.search(true, state, 7);
+                compMove = Minimax.search(true, state, startDepth);
                 if (compMove.equals("DNF") || compMove.equals("")) {
                     compMove = getOppRandMove(false, state);
                 } else {
-                    for (i = 8; i <= 40; i++) {
+                    for (i = startDepth + 1; i <= 40; i++) {
                         bestCompMove = Minimax.search(true, state, i);
                         if (!bestCompMove.equals("DNF") && !bestCompMove.equals("")) {
                             compMove = bestCompMove;
@@ -155,11 +158,11 @@ class Analysis {
                 }
 
                 Minimax.timeRemaining = 20000L;
-                oppMove = Minimax.search(false, state, 7);
+                oppMove = Minimax.search(false, state, startDepth);
                 if (oppMove.equals("DNF") || oppMove.equals("")) {
                     oppMove = getOppRandMove(true, state);
                 } else {
-                    for (i = 8; i <= 40; i++) {
+                    for (i = startDepth + 1; i <= 40; i++) {
                         bestOppMove = Minimax.search(false, state, i);
                         if (!bestOppMove.equals("DNF") && !bestOppMove.equals("")) {
                             oppMove = bestOppMove;

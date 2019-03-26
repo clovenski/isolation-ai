@@ -21,6 +21,7 @@ class Project3 {
             }
         }));
 
+        final int START_DEPTH = 8;
         int row, col, i, bestDepth, bestUtility, turnCount = 0;
         String compMove, bestCompMove, oppMove;
         long startTime, runTime;
@@ -29,15 +30,15 @@ class Project3 {
             startTime = System.currentTimeMillis();
 
             Minimax.timeRemaining = 20000L;
-            compMove = Minimax.search(true, state, 7);
+            compMove = Minimax.search(true, state, START_DEPTH);
             if (compMove.equals("DNF") || compMove.equals("")) {
                 compMove = getOppRandMove(false, state);
                 bestDepth = 0;
                 bestUtility = -4200;
             } else {
-                bestDepth = 7;
+                bestDepth = START_DEPTH;
                 bestUtility = Minimax.getMaxUtility();
-                for (i = 8; i <= 40; i++) {
+                for (i = START_DEPTH + 1; i <= 40; i++) {
                     bestCompMove = Minimax.search(true, state, i);
                     if (!bestCompMove.equals("DNF") && !bestCompMove.equals("")) {
                         compMove = bestCompMove;

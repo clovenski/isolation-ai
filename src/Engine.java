@@ -22,6 +22,7 @@ class Engine {
 
         state.setAgentX(agentX);
 
+        final int START_DEPTH = 8;
         int row, col, i, turnCount = 0;
         String compMove, bestCompMove, oppMove;
         long startTime, runTime;
@@ -41,11 +42,11 @@ class Engine {
             startTime = System.currentTimeMillis();
 
             Minimax.timeRemaining = timeLimit;
-            compMove = Minimax.search(true, state, 7);
+            compMove = Minimax.search(true, state, START_DEPTH);
             if (compMove.equals("DNF") || compMove.equals("")) {
                 compMove = getRandMove();
             } else {
-                for (i = 8; i <= 20; i++) {
+                for (i = START_DEPTH + 1; i <= 20; i++) {
                     bestCompMove = Minimax.search(true, state, i);
                     if (!bestCompMove.equals("DNF") && !bestCompMove.equals("")) {
                         compMove = bestCompMove;
