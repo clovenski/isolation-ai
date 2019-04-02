@@ -26,6 +26,7 @@ class Project3 {
             startTime = System.currentTimeMillis();
 
             Minimax.timeRemaining = 20000L;
+            Minimax.resetTransTable();
             compMove = Minimax.search(true, state, START_DEPTH);
             if (compMove.equals("DNF") || compMove.equals("")) {
                 compMove = getOppRandMove(false, state);

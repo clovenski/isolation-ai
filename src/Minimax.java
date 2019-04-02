@@ -6,7 +6,8 @@ class Minimax {
     private static String action;
     private static int maxDepth;
     private static Random rng = new Random();
-    private static HashMap<Integer, ArrayList<String>> optimalMoves;
+    private static HashMap<Integer, ArrayList<String>> bestNextMoves;
+    private static HashMap<String, String> transpositionTable;
     private static int maxUtility;
     private static boolean earlyStop;
     private static long startTime;
@@ -14,9 +15,22 @@ class Minimax {
     public static boolean random = true;
     public static long timeRemaining;
 
+    public static void resetTransTable() {
+        if (transpositionTable == null) {
+            transpositionTable = new HashMap<String, String>(10000000);
+        } else {
+            transpositionTable.clear();
+        }
+    }
+
+    //debugging
+    public static int getTableSize() {
+        return transpositionTable.size();
+    }
+
     public static String search(boolean forAgentX, State state, int maxDepth) {
         Minimax.maxDepth = maxDepth;
-        optimalMoves = new HashMap<Integer, ArrayList<String>>();
+        bestNextMoves = new HashMap<Integer, ArrayList<String>>();
         action = "";
         maxUtility = Integer.MIN_VALUE;
         earlyStop = false;
@@ -31,8 +45,8 @@ class Minimax {
         if (Minimax.random) {
             int size;
             try {
-                size = optimalMoves.get(maxUtility).size();
-                return optimalMoves.get(maxUtility).get(rng.nextInt(size));
+                size = bestNextMoves.get(maxUtility).size();
+                return bestNextMoves.get(maxUtility).get(rng.nextInt(size));
             } catch (NullPointerException e) {
                 return action;
             }
@@ -42,8 +56,8 @@ class Minimax {
     }
 
     private static int maxValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
-        int v, oldV, row, oldRow, col, oldCol, minResult, terminalUtil;
-        String oldAction;
+        int v, oldV, bestLocalUtility, row, oldRow, col, oldCol, minResult, terminalUtil;
+        String oldAction, bestSuccessor, bestLocalAction = "";
         ArrayList<String> successors;
 
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
@@ -53,9 +67,9 @@ class Minimax {
             earlyStop = true;
             terminalUtil = state.getUtility(forAgentX);
             if (terminalUtil == Integer.MAX_VALUE) {
-                return terminalUtil - depth;
-            } else if (terminalUtil == Integer.MIN_VALUE){
-                return terminalUtil + depth;
+                return terminalUtil - (depth - 1);
+            } else if (terminalUtil == Integer.MIN_VALUE) {
+                return terminalUtil + (depth - 1);
             } else {
                 return terminalUtil;
             }
@@ -64,9 +78,9 @@ class Minimax {
         if (state.isTerminal() || depth == maxDepth) {
             terminalUtil = state.getUtility(forAgentX);
             if (terminalUtil == Integer.MAX_VALUE) {
-                return terminalUtil - depth;
-            } else if (terminalUtil == Integer.MIN_VALUE){
-                return terminalUtil + depth;
+                return terminalUtil - (depth - 1);
+            } else if (terminalUtil == Integer.MIN_VALUE) {
+                return terminalUtil + (depth - 1);
             } else {
                 return terminalUtil;
             }
@@ -76,6 +90,11 @@ class Minimax {
         oldRow = forAgentX ? state.getXRow() : state.getORow();
         oldCol = forAgentX ? state.getXCol() : state.getOCol();
         successors = state.getSuccessors(forAgentX, forAgentX);
+        bestSuccessor = transpositionTable.get(state.toString());
+        if (bestSuccessor != null) {
+            putBestFirst(successors, bestSuccessor);
+        }
+        bestLocalUtility = v;
         for (String move : successors) {
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));
@@ -85,6 +104,10 @@ class Minimax {
             state.move(forAgentX, forAgentX, row, col);
             minResult = minValue(forAgentX, state, alpha, beta, depth + 1);
             v = Math.max(v, minResult);
+            if (bestLocalUtility < minResult) {
+                bestLocalUtility = minResult;
+                bestLocalAction = move;
+            }
             if (v == oldV) {
                 action = oldAction;
             } else {
@@ -103,12 +126,16 @@ class Minimax {
             }
         }
 
+        if (!bestLocalAction.equals("")) {
+            transpositionTable.put(state.toString(), bestLocalAction);
+        }
+
         return v;
     }
 
     private static int minValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
-        int v, oldV, row, oldRow, col, oldCol, terminalUtil;
-        String oldAction;
+        int v, bestLocalUtility, row, oldRow, col, oldCol, terminalUtil;
+        String bestSuccessor, bestLocalAction = "";
         ArrayList<String> successors;
 
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
@@ -118,9 +145,9 @@ class Minimax {
             earlyStop = true;
             terminalUtil = state.getUtility(forAgentX);
             if (terminalUtil == Integer.MAX_VALUE) {
-                return terminalUtil - depth;
-            } else if (terminalUtil == Integer.MIN_VALUE){
-                return terminalUtil + depth;
+                return terminalUtil - (depth - 1);
+            } else if (terminalUtil == Integer.MIN_VALUE) {
+                return terminalUtil + (depth - 1);
             } else {
                 return terminalUtil;
             }
@@ -129,9 +156,9 @@ class Minimax {
         if (state.isTerminal() || depth == maxDepth) {
             terminalUtil = state.getUtility(forAgentX);
             if (terminalUtil == Integer.MAX_VALUE) {
-                return terminalUtil - depth;
-            } else if (terminalUtil == Integer.MIN_VALUE){
-                return terminalUtil + depth;
+                return terminalUtil - (depth - 1);
+            } else if (terminalUtil == Integer.MIN_VALUE) {
+                return terminalUtil + (depth - 1);
             } else {
                 return terminalUtil;
             }
@@ -141,18 +168,20 @@ class Minimax {
         oldRow = forAgentX ? state.getORow() : state.getXRow();
         oldCol = forAgentX ? state.getOCol() : state.getXCol();
         successors = state.getSuccessors(!forAgentX, forAgentX);
+        bestSuccessor = transpositionTable.get(state.toString());
+        if (bestSuccessor != null) {
+            putBestFirst(successors, bestSuccessor);
+        }
+        bestLocalUtility = v;
         for (String move : successors) {
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));
-            oldV = v;
-            oldAction = action;
 
             state.move(forAgentX, !forAgentX, row, col);
             v = Math.min(v, maxValue(forAgentX, state, alpha, beta, depth + 1));
-            if (v == oldV) {
-                action = oldAction;
-            } else {
-                action = move;
+            if (bestLocalUtility > v) {
+                bestLocalUtility = v;
+                bestLocalAction = move;
             }
             state.revert(forAgentX, !forAgentX, oldRow, oldCol);
             if (v <= alpha) {
@@ -164,24 +193,35 @@ class Minimax {
             }
         }
 
+        if (!bestLocalAction.equals("")) {
+            transpositionTable.put(state.toString(), bestLocalAction);
+        }
+
         return v;
+    }
+
+    private static void putBestFirst(ArrayList<String> successors, String bestMove) {
+        if (!successors.remove(bestMove)) {
+            throw new IllegalStateException(bestMove + " not in " + successors.toString());
+        }
+        successors.add(0, bestMove);
     }
 
     private static void updateOptimals(int v, String move) {
         ArrayList<String> moves;
         if (v > maxUtility) {
-            optimalMoves.clear();
+            bestNextMoves.clear();
             moves = new ArrayList<String>();
             moves.add(move);
-            optimalMoves.put(v, moves);
+            bestNextMoves.put(v, moves);
             maxUtility = v;
         } else {
             try {
-                optimalMoves.get(v).add(move);
+                bestNextMoves.get(v).add(move);
             } catch (NullPointerException e) {
                 moves = new ArrayList<String>();
                 moves.add(move);
-                optimalMoves.put(v, moves);
+                bestNextMoves.put(v, moves);
                 maxUtility = v;
             }
         }

@@ -40,6 +40,7 @@ class Engine {
             startTime = System.currentTimeMillis();
 
             Minimax.timeRemaining = timeLimit;
+            Minimax.resetTransTable();
             compMove = Minimax.search(true, state, START_DEPTH);
             if (compMove.equals("DNF") || compMove.equals("")) {
                 compMove = getRandMove();

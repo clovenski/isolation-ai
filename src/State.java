@@ -410,17 +410,17 @@ class State {
         winner = "None";
     }
 
-    public char[] toCharArray() {
-        char[] array = new char[64];
-        int index = 0;
+    public String toString() {
+        String result = "";
+        int i, j;
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                array[index++] = board[i][j];
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                result += board[i][j];
             }
         }
 
-        return array;
+        return result;
     }
 
     public String toString(int row) {

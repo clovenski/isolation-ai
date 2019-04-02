@@ -10,7 +10,7 @@ class AgentInitializer {
     private static Heuristic getAgentXHeuristic() {
         return new Heuristic() {
             public int computeUtility(State state) {
-                return state.getNumXMoves() - 2 * state.getNumOMoves();
+                return state.getNumXMoves() - state.getNumOMoves();
             }
         };
     }
@@ -57,7 +57,7 @@ class AgentInitializer {
     private static Heuristic getAgentOHeuristic() {
         return new Heuristic() {
             public int computeUtility(State state) {
-                return state.getNumOMoves() - state.getNumXMoves();
+                return state.getNumOMoves() + state.getNumOLocalMoves() - state.getNumXMoves() - state.getNumXLocalMoves();
             }
         };
     }
@@ -69,21 +69,21 @@ class AgentInitializer {
                 int s1Col = s1.charAt(1);
                 int s2Row = s2.charAt(0);
                 int s2Col = s2.charAt(1);
-                // double dist1;
-                // double dist2;
-                // int oppLocalMoves = selfSorter ? state.getNumXLocalMoves() : state.getNumOLocalMoves();
-                // int oppMoves = selfSorter ? state.getNumXMoves() : state.getNumOMoves();
+                double dist1;
+                double dist2;
+                int oppLocalMoves = selfSorter ? state.getNumXLocalMoves() : state.getNumOLocalMoves();
+                int oppMoves = selfSorter ? state.getNumXMoves() : state.getNumOMoves();
 
-                // if (oppLocalMoves == 1 || oppMoves < 8) {
-                //     dist1 = distFromOpp(state, !selfSorter, s1Row, s1Col);
-                //     dist2 = distFromOpp(state, !selfSorter, s2Row, s2Col);
-                // } else {
-                //     dist1 = distFromCenter(s1Row, s1Col);
-                //     dist2 = distFromCenter(s2Row, s2Col);
-                // }
+                if (oppLocalMoves == 1 || oppMoves < 8) {
+                    dist1 = distFromOpp(state, !selfSorter, s1Row, s1Col);
+                    dist2 = distFromOpp(state, !selfSorter, s2Row, s2Col);
+                } else {
+                    dist1 = distFromCenter(s1Row, s1Col);
+                    dist2 = distFromCenter(s2Row, s2Col);
+                }
 
-                double dist1 = distFromCenter(s1Row, s1Col);
-                double dist2 = distFromCenter(s2Row, s2Col);
+                // double dist1 = distFromCenter(s1Row, s1Col);
+                // double dist2 = distFromCenter(s2Row, s2Col);
 
                 if (dist1 > dist2) {
                     return 1;
