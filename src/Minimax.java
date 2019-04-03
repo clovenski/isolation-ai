@@ -17,7 +17,7 @@ class Minimax {
 
     public static void resetTransTable() {
         if (transpositionTable == null) {
-            transpositionTable = new HashMap<String, String>(10000000);
+            transpositionTable = new HashMap<String, String>(4200000);
         } else {
             transpositionTable.clear();
         }
@@ -57,7 +57,7 @@ class Minimax {
 
     private static int maxValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
         int v, oldV, bestLocalUtility, row, oldRow, col, oldCol, minResult, terminalUtil;
-        String oldAction, bestSuccessor, bestLocalAction = "";
+        String stateString, oldAction, bestSuccessor, bestLocalAction = "";
         ArrayList<String> successors;
 
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
@@ -90,7 +90,8 @@ class Minimax {
         oldRow = forAgentX ? state.getXRow() : state.getORow();
         oldCol = forAgentX ? state.getXCol() : state.getOCol();
         successors = state.getSuccessors(forAgentX, forAgentX);
-        bestSuccessor = transpositionTable.get(state.toString());
+        stateString = state.toString() + "M";
+        bestSuccessor = transpositionTable.get(stateString);
         if (bestSuccessor != null) {
             putBestFirst(successors, bestSuccessor);
         }
@@ -127,7 +128,7 @@ class Minimax {
         }
 
         if (!bestLocalAction.equals("")) {
-            transpositionTable.put(state.toString(), bestLocalAction);
+            transpositionTable.put(stateString, bestLocalAction);
         }
 
         return v;
@@ -135,7 +136,7 @@ class Minimax {
 
     private static int minValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
         int v, bestLocalUtility, row, oldRow, col, oldCol, terminalUtil;
-        String bestSuccessor, bestLocalAction = "";
+        String stateString, bestSuccessor, bestLocalAction = "";
         ArrayList<String> successors;
 
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
@@ -168,7 +169,8 @@ class Minimax {
         oldRow = forAgentX ? state.getORow() : state.getXRow();
         oldCol = forAgentX ? state.getOCol() : state.getXCol();
         successors = state.getSuccessors(!forAgentX, forAgentX);
-        bestSuccessor = transpositionTable.get(state.toString());
+        stateString = state.toString() + "m";
+        bestSuccessor = transpositionTable.get(stateString);
         if (bestSuccessor != null) {
             putBestFirst(successors, bestSuccessor);
         }
@@ -194,7 +196,7 @@ class Minimax {
         }
 
         if (!bestLocalAction.equals("")) {
-            transpositionTable.put(state.toString(), bestLocalAction);
+            transpositionTable.put(stateString, bestLocalAction);
         }
 
         return v;

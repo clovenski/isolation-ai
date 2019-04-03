@@ -27,7 +27,7 @@ class AgentInitializer {
                 int oppLocalMoves = selfSorter ? state.getNumOLocalMoves() : state.getNumXLocalMoves();
                 int oppMoves = selfSorter ? state.getNumOMoves() : state.getNumXMoves();
     
-                if (oppLocalMoves == 1 || oppMoves < 8) {
+                if (oppLocalMoves == 1 || oppMoves <= 16) {
                     dist1 = distFromOpp(state, selfSorter, s1Row, s1Col);
                     dist2 = distFromOpp(state, selfSorter, s2Row, s2Col);
                 } else {
@@ -57,7 +57,7 @@ class AgentInitializer {
     private static Heuristic getAgentOHeuristic() {
         return new Heuristic() {
             public int computeUtility(State state) {
-                return state.getNumOMoves() + state.getNumOLocalMoves() - state.getNumXMoves() - state.getNumXLocalMoves();
+                return state.getNumOMoves() * state.getNumOLocalMoves() - state.getNumXMoves() * state.getNumXLocalMoves();
             }
         };
     }
@@ -74,16 +74,13 @@ class AgentInitializer {
                 int oppLocalMoves = selfSorter ? state.getNumXLocalMoves() : state.getNumOLocalMoves();
                 int oppMoves = selfSorter ? state.getNumXMoves() : state.getNumOMoves();
 
-                if (oppLocalMoves == 1 || oppMoves < 8) {
+                if (oppLocalMoves == 1 || oppMoves <= 16) {
                     dist1 = distFromOpp(state, !selfSorter, s1Row, s1Col);
                     dist2 = distFromOpp(state, !selfSorter, s2Row, s2Col);
                 } else {
                     dist1 = distFromCenter(s1Row, s1Col);
                     dist2 = distFromCenter(s2Row, s2Col);
                 }
-
-                // double dist1 = distFromCenter(s1Row, s1Col);
-                // double dist2 = distFromCenter(s2Row, s2Col);
 
                 if (dist1 > dist2) {
                     return 1;

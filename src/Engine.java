@@ -20,7 +20,14 @@ class Engine {
 
         state.setAgentX(AgentInitializer.getAgentX(state));
 
-        final int START_DEPTH = 8;
+        final int START_DEPTH;
+        if (timeLimit >= 20000) {
+            START_DEPTH = 8;
+        } else if (timeLimit >= 4000) {
+            START_DEPTH = 7;
+        } else {
+            START_DEPTH = 6;
+        }
         int row, col, i, turnCount = 0;
         String compMove, bestCompMove, oppMove;
         long startTime, runTime;

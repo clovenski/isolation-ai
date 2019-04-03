@@ -40,9 +40,6 @@ class Analysis {
                 }
             }
 
-            //debugging
-            System.out.println(Minimax.getTableSize());
-
             runTime = System.currentTimeMillis() - startTime;
             ui.printRunTime(runTime);
             System.out.println("Best depth: " + bestDepth);
@@ -78,9 +75,6 @@ class Analysis {
                     }
                 }
             }
-
-            //debugging
-            System.out.println(Minimax.getTableSize());
 
             runTime = System.currentTimeMillis() - startTime;
             ui.printRunTime(runTime);
