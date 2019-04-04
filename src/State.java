@@ -16,6 +16,7 @@ class State {
     private int xLocalMoves;
     private int oLocalMoves;
     private String winner;
+    private boolean pvp;
     private static final int[][][] AXIS_OFFSETS = {
         { // axis 0: up
             {-1, -2, -3, -4, -5, -6, -7},
@@ -51,7 +52,7 @@ class State {
         }
     };
 
-    public State(boolean xTop) {
+    public State(boolean xTop, boolean pvp) {
         int i, j;
 
         board = new char[8][8];
@@ -72,6 +73,7 @@ class State {
         xMoves = oMoves = 20;
         xLocalMoves = oLocalMoves = 3;
         winner = "None";
+        this.pvp = pvp;
     }
 
     public State(State otherState) {
@@ -98,6 +100,7 @@ class State {
         xLocalMoves = otherState.xLocalMoves;
         oLocalMoves = otherState.oLocalMoves;
         winner = otherState.winner;
+        pvp = otherState.pvp;
     }
 
     public void setAgentX(Agent agent) {
@@ -182,8 +185,7 @@ class State {
         return oLocalMoves;
     }
 
-    // move into row, col
-    public void move(boolean forUtilX, boolean movingX, int row, int col) {
+    private void processMove(boolean movingX, int row, int col) {
         assert board[row][col] == '-';
 
         board[row][col] = movingX ? 'X' : 'O';
@@ -196,67 +198,56 @@ class State {
             oRow = row;
             oCol = col;
         }
+    }
 
+    // move into row, col
+    public void move(boolean forUtilX, boolean movingX, int row, int col) {
+        processMove(movingX, row, col);
         computeUtility(forUtilX);
     }
 
-    // move into row, col; compute utility for both agents
+    // move into row, col; compute utility for both agents if not pvp
     public void move(boolean movingX, int row, int col) {
-        assert board[row][col] == '-';
+        processMove(movingX, row, col);
+
+        if (!pvp) {
+             computeUtility(true);
+            if (agentO != null) {
+                computeUtility(false);
+            }
+        }
+    }
+
+    private void processRevert(boolean movingX, int row, int col) {
+        assert board[row][col] == '#';
 
         board[row][col] = movingX ? 'X' : 'O';
         if (movingX) {
-            board[xRow][xCol] = '#';
+            board[xRow][xCol] = '-';
             xRow = row;
             xCol = col;
         } else {
-            board[oRow][oCol] = '#';
+            board[oRow][oCol] = '-';
             oRow = row;
             oCol = col;
-        }
-
-        computeUtility(true);
-        if (agentO != null) {
-            computeUtility(false);
         }
     }
 
     // revert back to row, col
     public void revert(boolean forUtilX, boolean movingX, int row, int col) {
-        assert board[row][col] == '#';
-
-        board[row][col] = movingX ? 'X' : 'O';
-        if (movingX) {
-            board[xRow][xCol] = '-';
-            xRow = row;
-            xCol = col;
-        } else {
-            board[oRow][oCol] = '-';
-            oRow = row;
-            oCol = col;
-        }
-
+        processRevert(movingX, row, col);
         computeUtility(forUtilX);
     }
 
-    // revert back to row, col; compute utility for both agents
+    // revert back to row, col; compute utility for both agents if not pvp
     public void revert(boolean movingX, int row, int col) {
-        assert board[row][col] == '#';
+        processRevert(movingX, row, col);
 
-        board[row][col] = movingX ? 'X' : 'O';
-        if (movingX) {
-            board[xRow][xCol] = '-';
-            xRow = row;
-            xCol = col;
-        } else {
-            board[oRow][oCol] = '-';
-            oRow = row;
-            oCol = col;
-        }
-
-        computeUtility(true);
-        if (agentO != null) {
-            computeUtility(false);
+        if (!pvp) {
+            computeUtility(true);
+            if (agentO != null) {
+                computeUtility(false);
+            }
         }
     }
 

@@ -1,101 +1,42 @@
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
 
 class Project3 {
-    public void run() {
+    public void run(ArrayList<String> args) {
         Engine engine = new Engine();
-        engine.startGame();
+
+        if (args == null) {
+            engine.startGame();
+        } else {
+            if (args.contains("--pvp")) {
+                engine.startPVPGame(args.contains("--timed"));
+            } else {
+                engine.startGame();
+            }
+        }
     }
 
     public void testrun() {
-        State state = new State(true);
-        Logger logger = new Logger();
-        Scanner scanner = new Scanner(System.in);
-        UI ui = new UI(scanner);
-        ui.printGameState(state, logger);
-
-        state.setAgentX(AgentInitializer.getAgentX(state));
-
-        final int START_DEPTH = 8;
-        int row, col, i, bestDepth, bestUtility, turnCount = 0;
-        String compMove, bestCompMove, oppMove;
-        long startTime, runTime;
-
-        while (!state.isTerminal()) {
-            startTime = System.currentTimeMillis();
-
-            Minimax.timeRemaining = 20000L;
-            Minimax.resetTransTable();
-            compMove = Minimax.search(true, state, START_DEPTH);
-            if (compMove.equals("DNF") || compMove.equals("")) {
-                compMove = getOppRandMove(false, state);
-                bestDepth = 0;
-                bestUtility = -4200;
-            } else {
-                bestDepth = START_DEPTH;
-                bestUtility = Minimax.getMaxUtility();
-                for (i = START_DEPTH + 1; i <= 40; i++) {
-                    bestCompMove = Minimax.search(true, state, i);
-                    if (!bestCompMove.equals("DNF") && !bestCompMove.equals("")) {
-                        compMove = bestCompMove;
-                        bestDepth = i;
-                        bestUtility = Minimax.getMaxUtility();
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            System.out.println(Minimax.getTableSize());
-
-            runTime = System.currentTimeMillis() - startTime;
-            ui.printRunTime(runTime);
-            System.out.println("Best depth: " + bestDepth);
-            System.out.println("Best Utility: " + bestUtility);
-
-            row = Character.getNumericValue(compMove.charAt(0));
-            col = Character.getNumericValue(compMove.charAt(1));
-            state.move(true, row, col);
-            logger.log(true, row, col);
-            if (turnCount < 2) {
-                turnCount++;
-                Minimax.random = turnCount < 2;
-            }
-
-            if (state.isTerminal()) {
-                ui.printGameState(state, logger);
-                break;
-            }
-            
-            oppMove = getOppRandMove(true, state);
-            row = Character.getNumericValue(oppMove.charAt(0));
-            col = Character.getNumericValue(oppMove.charAt(1));
-            state.move(false, row, col);
-            logger.log(false, row, col);
-
-            ui.printGameState(state, logger);
-        }
-
-        ui.printWinner(state.getWinner());
-
-        scanner.close();
-    }
-
-    private String getOppRandMove(boolean forX, State state) {
-        Random rng = new Random();
-        ArrayList<String> successors = state.getSuccessors(!forX);
-
-        return successors.get(rng.nextInt(successors.size()));
+        Tester tester = new Tester();
+        tester.run();
     }
 
     public static void main(String[] args) {
         Project3 program = new Project3();
 
-        if (args.length > 0 && args[0].equals("--test")) {
-            program.testrun();
+        if (args.length > 0) {
+            ArrayList<String> argsList = new ArrayList<String>();
+            for (String arg : args) {
+                argsList.add(arg);
+            }
+
+            if (argsList.contains("--test")) {
+                program.testrun();
+            } else {
+                program.run(argsList);
+            }
+
         } else {
-            program.run();
+            program.run(null);
         }
     }
 }

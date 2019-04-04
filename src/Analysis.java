@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 class Analysis {
     public void analyzeOneGame() {
-        State state = new State(true);
+        State state = new State(true, false);
         Logger logger = new Logger();
         Scanner scanner = new Scanner(System.in);
         UI ui = new UI(scanner);
@@ -98,7 +98,7 @@ class Analysis {
     } // end analyze one game
 
     public void analyzeMultiGames(int numGames) {
-        State state = new State(true);
+        State state = new State(true, false);
         Logger logger = new Logger();
         Scanner scanner = new Scanner(System.in);
         UI ui = new UI(scanner);

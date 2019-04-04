@@ -6,17 +6,21 @@ class UI {
     private static final String[] ROW_HEADER = {"A ", "B ", "C ", "D ", "E ", "F ", "G ", "H "};
     private static final char[] ROW_MAPPING = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'};
     private Scanner scanner;
+    private boolean pvpTimed;
 
     public UI(Scanner scanner) {
         this.scanner = scanner;
+        pvpTimed = false;
     }
 
-    public void printGameState(State state, Logger logger) {
+    public UI(Scanner scanner, boolean pvpTimed) {
+        this.scanner = scanner;
+        this.pvpTimed = pvpTimed;
+    }
+
+    private void displayGame(State state, Logger logger) {
         String[] movesLog = logger.getMovesLog();
 
-        System.out.println();
-
-        System.out.println(COL_HEADER + "    Computer vs. Opponent");
         for (int i = 0; i < 8; i++) {
             System.out.print(ROW_HEADER[i] + state.toString(i));
             if (i < movesLog.length) {
@@ -33,30 +37,54 @@ class UI {
         }
     }
 
-    public String getOppMove(ArrayList<String> choices) {
-        String oppChoice;
+    public void printGameState(State state, Logger logger) {
+        System.out.println("\n" + COL_HEADER + "    Computer vs. Opponent");
+        displayGame(state, logger);
+    }
+
+    public void printGameStatePVP(State state, Logger logger) {
+        System.out.println("\n" + COL_HEADER + "    PLAYER X vs. PLAYER O");
+        displayGame(state, logger);
+        if (pvpTimed) {
+            System.out.println("\n Time Remaining:");
+            System.out.printf("X: %-5s O: %-5s\n", logger.getXTimeLeft(), logger.getOTimeLeft());
+        }
+    }
+
+    private String getUserInput(String prompt, ArrayList<String> choices) {
+        String userChoice;
 
         while (true) {
-            System.out.print("\nEnter opponent's move: ");
+            System.out.print("\n" + prompt);
 
-            oppChoice = scanner.nextLine().toUpperCase();
+            userChoice = scanner.nextLine().toUpperCase();
 
-            if (!oppChoice.matches("[A-H][1-8]")) {
+            if (!userChoice.matches("[A-H][1-8]")) {
                 System.err.print("INVALID INPUT");
                 continue;
             }
 
-            oppChoice = Integer.valueOf(oppChoice.charAt(0) - 'A').toString()
-                        + (Character.getNumericValue(oppChoice.charAt(1)) - 1);
+            userChoice = Integer.valueOf(userChoice.charAt(0) - 'A').toString()
+                        + (Character.getNumericValue(userChoice.charAt(1)) - 1);
 
-            if (!choices.contains(oppChoice)) {
+            if (!choices.contains(userChoice)) {
                 System.err.print("INVALID CHOICE");
             } else {
                 break;
             }
         }
 
-        return oppChoice;
+        return userChoice;
+    }
+
+    public String getOppMove(ArrayList<String> choices) {
+        String prompt = "Enter opponent's move: ";
+        return getUserInput(prompt, choices);
+    }
+
+    public String getNextMove(boolean forX, ArrayList<String> choices) {
+        String prompt = "Enter move for PLAYER " + (forX ? "X: " : "O: ");
+        return getUserInput(prompt, choices);
     }
 
     public void printCompMove(int row, int col) {
@@ -89,6 +117,26 @@ class UI {
         return xFirst;
     }
 
+    public boolean getWhoFirstPVP() {
+        boolean xFirst;
+        String input;
+
+        while (true) {
+            System.out.print("Who goes first, X or O: ");
+
+            input = scanner.nextLine().toUpperCase();
+
+            if (input.matches("[XO]")) {
+                xFirst = input.equals("X");
+                break;
+            } else {
+                System.err.println("INVALID INPUT");
+            }
+        }
+
+        return xFirst;
+    }
+
     public long getTimeLimit() {
         long timeLimit;
 
@@ -104,6 +152,30 @@ class UI {
         }
 
         return timeLimit;
+    }
+
+    public long getTimeLimitPVP() {
+        long timeLimit;
+
+        while (true) {
+            System.out.print("Enter time limit of each player (in minutes, [5...20]): ");
+
+            try {
+                timeLimit = Long.parseLong(scanner.nextLine());
+                if (timeLimit < 5 || timeLimit > 20) {
+                    throw new IllegalArgumentException();
+                }
+                break;
+            } catch (Exception e) {
+                System.err.println("INVALID INPUT");
+            }
+        }
+
+        return timeLimit * 60 * 1000;
+    }
+
+    public void println(String s) {
+        System.out.println(s);
     }
 
     public void printWinner(String winner) {
