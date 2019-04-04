@@ -17,3 +17,7 @@ The following commands assume you're in the project root directory (the same dir
 **Running**: `java -cp '.;bin' Project3`
 
 - you can pass the argument `--test` for a run with a 20 second time limit of agent X versus a random-move player
+
+- you can also pass `--pvp` for player versus player
+
+  - by default pvp is not timed, but passing `--timed` will prompt for a time limit; no player can exceed this amount of total, accumulated thinking time
