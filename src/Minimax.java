@@ -63,16 +63,9 @@ class Minimax {
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
         Minimax.startTime = System.currentTimeMillis();
 
-        if (Minimax.timeRemaining <= 500L) {
+        if (Minimax.timeRemaining <= 210L) {
             earlyStop = true;
-            terminalUtil = state.getUtility(forAgentX);
-            if (terminalUtil == Integer.MAX_VALUE) {
-                return terminalUtil - (depth - 1);
-            } else if (terminalUtil == Integer.MIN_VALUE) {
-                return terminalUtil + (depth - 1);
-            } else {
-                return terminalUtil;
-            }
+            return Integer.MAX_VALUE;
         }
 
         if (state.isTerminal() || depth == maxDepth) {
@@ -142,16 +135,9 @@ class Minimax {
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
         Minimax.startTime = System.currentTimeMillis();
 
-        if (Minimax.timeRemaining <= 500L) {
+        if (Minimax.timeRemaining <= 210L) {
             earlyStop = true;
-            terminalUtil = state.getUtility(forAgentX);
-            if (terminalUtil == Integer.MAX_VALUE) {
-                return terminalUtil - (depth - 1);
-            } else if (terminalUtil == Integer.MIN_VALUE) {
-                return terminalUtil + (depth - 1);
-            } else {
-                return terminalUtil;
-            }
+            return Integer.MIN_VALUE;
         }
 
         if (state.isTerminal() || depth == maxDepth) {

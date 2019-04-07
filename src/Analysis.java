@@ -43,6 +43,7 @@ class Analysis {
             runTime = System.currentTimeMillis() - startTime;
             ui.printRunTime(runTime);
             System.out.println("Best depth: " + bestDepth);
+            System.out.println("Best X utility: " + Minimax.getMaxUtility());
 
             row = Character.getNumericValue(compMove.charAt(0));
             col = Character.getNumericValue(compMove.charAt(1));
@@ -79,6 +80,7 @@ class Analysis {
             runTime = System.currentTimeMillis() - startTime;
             ui.printRunTime(runTime);
             System.out.println("Best depth: " + bestDepth);
+            System.out.println("Best O utility: " + Minimax.getMaxUtility());
 
             row = Character.getNumericValue(oppMove.charAt(0));
             col = Character.getNumericValue(oppMove.charAt(1));

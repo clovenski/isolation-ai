@@ -24,10 +24,9 @@ class AgentInitializer {
                 int s2Col = s2.charAt(1);
                 double dist1;
                 double dist2;
-                int oppLocalMoves = selfSorter ? state.getNumOLocalMoves() : state.getNumXLocalMoves();
                 int oppMoves = selfSorter ? state.getNumOMoves() : state.getNumXMoves();
     
-                if (oppLocalMoves == 1 || oppMoves <= 16) {
+                if (oppMoves <= 16) {
                     dist1 = distFromOpp(state, selfSorter, s1Row, s1Col);
                     dist2 = distFromOpp(state, selfSorter, s2Row, s2Col);
                 } else {
@@ -57,7 +56,7 @@ class AgentInitializer {
     private static Heuristic getAgentOHeuristic() {
         return new Heuristic() {
             public int computeUtility(State state) {
-                return state.getNumOMoves() * state.getNumOLocalMoves() - state.getNumXMoves() * state.getNumXLocalMoves();
+                return state.getNumOMoves() - state.getNumXMoves();
             }
         };
     }
