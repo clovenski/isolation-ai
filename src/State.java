@@ -211,7 +211,7 @@ class State {
         processMove(movingX, row, col);
 
         if (!pvp) {
-             computeUtility(true);
+            computeUtility(true);
             if (agentO != null) {
                 computeUtility(false);
             }

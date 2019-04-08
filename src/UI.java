@@ -145,6 +145,10 @@ class UI {
 
             try {
                 timeLimit = Long.parseLong(scanner.nextLine()) * 1000L;
+                if (timeLimit <= 0L) {
+                    throw new Exception();
+                }
+
                 break;
             } catch (Exception e) {
                 System.err.println("INVALID INPUT");
