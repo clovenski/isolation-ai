@@ -12,6 +12,8 @@ Compiling and running the program is simplified with the provided bash scripts. 
 
 The following commands assume you're in the project root directory (the same directory as this readme).
 
+Note: These commands work for me on a Windows machine using Git Bash.
+
 **Compilation**: `javac src/*.java -d bin`
 
 **Running**: `java -cp '.;bin' Project3`
