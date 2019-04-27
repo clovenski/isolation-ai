@@ -12,7 +12,7 @@ class Tester {
 
         state.setAgentX(AgentInitializer.getAgentX(state));
 
-        final int START_DEPTH = 8;
+        final int START_DEPTH = 7;
         int row, col, i, bestDepth, bestUtility, turnCount = 0;
         String compMove, bestCompMove, oppMove;
         long startTime, runTime;
@@ -42,12 +42,11 @@ class Tester {
                 }
             }
 
-            System.out.println("Transposition table size: " + Minimax.getTableSize());
-
             runTime = System.currentTimeMillis() - startTime;
             ui.printRunTime(runTime);
             System.out.println("Best depth: " + bestDepth);
             System.out.println("Best Utility: " + bestUtility);
+            System.out.println("Transposition table size: " + Minimax.getTableSize());
 
             row = Character.getNumericValue(compMove.charAt(0));
             col = Character.getNumericValue(compMove.charAt(1));

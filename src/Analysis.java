@@ -13,7 +13,7 @@ class Analysis {
         state.setAgentX(AgentInitializer.getAgentX(state));
         state.setAgentO(AgentInitializer.getAgentO(state));
 
-        final int START_DEPTH = 8;
+        final int START_DEPTH = 7;
         int row, col, i, bestDepth, turnCount = 0;
         String compMove, bestCompMove, oppMove, bestOppMove;
         long startTime, runTime;
@@ -108,7 +108,7 @@ class Analysis {
         state.setAgentX(AgentInitializer.getAgentX(state));
         state.setAgentO(AgentInitializer.getAgentO(state));
 
-        final int START_DEPTH = 8;
+        final int START_DEPTH = 7;
         int game, row, col, i, turnCount = 0;
         String compMove, bestCompMove, oppMove, bestOppMove;
 

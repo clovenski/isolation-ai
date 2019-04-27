@@ -21,9 +21,7 @@ class Engine {
         state.setAgentX(AgentInitializer.getAgentX(state));
 
         final int START_DEPTH;
-        if (timeLimit >= 20000) {
-            START_DEPTH = 8;
-        } else if (timeLimit >= 4000) {
+        if (timeLimit >= 4000) {
             START_DEPTH = 7;
         } else {
             START_DEPTH = 6;
