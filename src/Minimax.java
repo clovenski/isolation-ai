@@ -23,7 +23,6 @@ class Minimax {
         }
     }
 
-    //debugging
     public static int getTableSize() {
         return transpositionTable.size();
     }
