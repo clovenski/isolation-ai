@@ -50,7 +50,7 @@ class Engine {
             if (compMove.equals("DNF") || compMove.equals("")) {
                 compMove = getRandMove();
             } else {
-                for (i = START_DEPTH + 1; i <= 20; i++) {
+                for (i = START_DEPTH + 1; i <= 40; i++) {
                     bestCompMove = Minimax.search(true, state, i);
                     if (!bestCompMove.equals("DNF") && !bestCompMove.equals("")) {
                         compMove = bestCompMove;

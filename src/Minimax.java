@@ -9,6 +9,7 @@ class Minimax {
     private static HashMap<Integer, ArrayList<String>> bestNextMoves;
     private static HashMap<String, String> transpositionTable;
     private static int maxUtility;
+    private static int oldMaxUtil;
     private static boolean earlyStop;
     private static long startTime;
     public static int winDepth;
@@ -29,8 +30,11 @@ class Minimax {
 
     public static String search(boolean forAgentX, State state, int maxDepth) {
         Minimax.maxDepth = maxDepth;
-        bestNextMoves = new HashMap<Integer, ArrayList<String>>();
+        if (Minimax.random) {
+            bestNextMoves = new HashMap<Integer, ArrayList<String>>(27);
+        }
         action = "";
+        oldMaxUtil = maxUtility;
         maxUtility = Integer.MIN_VALUE;
         earlyStop = false;
         startTime = System.currentTimeMillis();
@@ -38,6 +42,7 @@ class Minimax {
         maxUtility = maxValue(forAgentX, state, Integer.MIN_VALUE, Integer.MAX_VALUE, 0);
 
         if (earlyStop) {
+            maxUtility = oldMaxUtil;
             return "DNF";
         }
 
@@ -55,8 +60,8 @@ class Minimax {
     }
 
     private static int maxValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
-        int v, oldV, bestLocalUtility, row, oldRow, col, oldCol, minResult, terminalUtil;
-        String stateString, oldAction, bestSuccessor, bestLocalAction = "";
+        int i, v, oldV, bestLocalUtility, row, oldRow, col, oldCol, minResult, terminalUtil;
+        String move, stateString, bestSuccessor, bestLocalAction = "";
         ArrayList<String> successors;
 
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
@@ -88,11 +93,11 @@ class Minimax {
             putBestFirst(successors, bestSuccessor);
         }
         bestLocalUtility = v;
-        for (String move : successors) {
+        for (i = 0; i < successors.size(); i++) {
+            move = successors.get(i);
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));
             oldV = v;
-            oldAction = action;
 
             state.move(forAgentX, forAgentX, row, col);
             minResult = minValue(forAgentX, state, alpha, beta, depth + 1);
@@ -101,12 +106,10 @@ class Minimax {
                 bestLocalUtility = minResult;
                 bestLocalAction = move;
             }
-            if (v == oldV) {
-                action = oldAction;
-            } else {
+            if (depth == 0 && v > oldV) {
                 action = move;
             }
-            if (depth == 0 && oldV <= minResult) {
+            if (Minimax.random && depth == 0 && oldV <= minResult) {
                 updateOptimals(v, move);
             }
             state.revert(forAgentX, forAgentX, oldRow, oldCol);
@@ -127,8 +130,8 @@ class Minimax {
     }
 
     private static int minValue(boolean forAgentX, State state, int alpha, int beta, int depth) {
-        int v, bestLocalUtility, row, oldRow, col, oldCol, terminalUtil;
-        String stateString, bestSuccessor, bestLocalAction = "";
+        int i, v, bestLocalUtility, row, oldRow, col, oldCol, terminalUtil;
+        String move, stateString, bestSuccessor, bestLocalAction = "";
         ArrayList<String> successors;
 
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
@@ -160,7 +163,8 @@ class Minimax {
             putBestFirst(successors, bestSuccessor);
         }
         bestLocalUtility = v;
-        for (String move : successors) {
+        for (i = 0; i < successors.size(); i++) {
+            move = successors.get(i);
             row = Character.getNumericValue(move.charAt(0));
             col = Character.getNumericValue(move.charAt(1));
 
@@ -198,7 +202,7 @@ class Minimax {
         ArrayList<String> moves;
         if (v > maxUtility) {
             bestNextMoves.clear();
-            moves = new ArrayList<String>();
+            moves = new ArrayList<String>(27);
             moves.add(move);
             bestNextMoves.put(v, moves);
             maxUtility = v;
@@ -206,7 +210,7 @@ class Minimax {
             try {
                 bestNextMoves.get(v).add(move);
             } catch (NullPointerException e) {
-                moves = new ArrayList<String>();
+                moves = new ArrayList<String>(27);
                 moves.add(move);
                 bestNextMoves.put(v, moves);
                 maxUtility = v;
