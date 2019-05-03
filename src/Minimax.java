@@ -12,7 +12,6 @@ class Minimax {
     private static int oldMaxUtil;
     private static boolean earlyStop;
     private static long startTime;
-    public static int winDepth;
     public static boolean random = true;
     public static long timeRemaining;
 
@@ -67,7 +66,7 @@ class Minimax {
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
         Minimax.startTime = System.currentTimeMillis();
 
-        if (Minimax.timeRemaining <= 210L) {
+        if (Minimax.timeRemaining <= 230L) {
             earlyStop = true;
             return Integer.MAX_VALUE;
         }
@@ -137,7 +136,7 @@ class Minimax {
         Minimax.timeRemaining -= System.currentTimeMillis() - startTime;
         Minimax.startTime = System.currentTimeMillis();
 
-        if (Minimax.timeRemaining <= 210L) {
+        if (Minimax.timeRemaining <= 230L) {
             earlyStop = true;
             return Integer.MIN_VALUE;
         }
