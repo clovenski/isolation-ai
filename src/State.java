@@ -15,12 +15,6 @@ class State {
     private int oMoves;
     private int xLocalMoves;
     private int oLocalMoves;
-    private int quad1Spaces; // top left
-    private int quad2Spaces; // top right
-    private int quad3Spaces; // bottom left
-    private int quad4Spaces; // bottom right
-    private int xQuadUtil;
-    private int oQuadUtil;
     private String winner;
     private boolean pvp;
     private static final int[][][] AXIS_OFFSETS = {
@@ -78,9 +72,6 @@ class State {
         oRow = oCol = xTop ? 7 : 0;
         xMoves = oMoves = 20;
         xLocalMoves = oLocalMoves = 3;
-        quad1Spaces = quad4Spaces = 15;
-        quad2Spaces = quad3Spaces = 16;
-        xQuadUtil = oQuadUtil = 15;
         winner = "None";
         this.pvp = pvp;
     }
@@ -108,12 +99,6 @@ class State {
         oMoves = otherState.oMoves;
         xLocalMoves = otherState.xLocalMoves;
         oLocalMoves = otherState.oLocalMoves;
-        quad1Spaces = otherState.quad1Spaces;
-        quad2Spaces = otherState.quad2Spaces;
-        quad3Spaces = otherState.quad3Spaces;
-        quad4Spaces = otherState.quad4Spaces;
-        xQuadUtil = otherState.xQuadUtil;
-        oQuadUtil = otherState.oQuadUtil;
         winner = otherState.winner;
         pvp = otherState.pvp;
     }
@@ -200,14 +185,6 @@ class State {
         return oLocalMoves;
     }
 
-    public int getXQuadUtil() {
-        return xQuadUtil;
-    }
-
-    public int getOQuadUtil() {
-        return oQuadUtil;
-    }
-
     private void processMove(boolean movingX, int row, int col) {
         assert board[row][col] == '-';
 
@@ -220,41 +197,6 @@ class State {
             board[oRow][oCol] = '#';
             oRow = row;
             oCol = col;
-        }
-
-        if (row < 4) { // either quad 1 or 2
-            if (col < 4) { // quad 1
-                quad1Spaces--;
-                if (movingX) {
-                    xQuadUtil = quad1Spaces;
-                } else {
-                    oQuadUtil = quad1Spaces;
-                }
-            } else { // quad 2
-                quad2Spaces--;
-                if (movingX) {
-                    xQuadUtil = quad2Spaces;
-                } else {
-                    oQuadUtil = quad2Spaces;
-                }
-            }
-
-        } else { //  either quad 3 or 4
-            if (col < 4) { // quad 3
-                quad3Spaces--;
-                if (movingX) {
-                    xQuadUtil = quad3Spaces;
-                } else {
-                    oQuadUtil = quad3Spaces;
-                }
-            } else { // quad 4
-                quad4Spaces--;
-                if (movingX) {
-                    xQuadUtil = quad4Spaces;
-                } else {
-                    oQuadUtil = quad4Spaces;
-                }
-            }
         }
     }
 
@@ -283,72 +225,12 @@ class State {
 
         if (movingX) {
             board[xRow][xCol] = '-';
-            if (xRow < 4) { // either quad 1 or 2
-                if (xCol < 4) { // quad 1
-                    quad1Spaces++;
-                } else { // quad 2
-                    quad2Spaces++;
-                }
-    
-            } else { //  either quad 3 or 4
-                if (xCol < 4) { // quad 3
-                    quad3Spaces++;
-                } else { // quad 4
-                    quad4Spaces++;
-                }
-            }
             xRow = row;
             xCol = col;
-
         } else {
             board[oRow][oCol] = '-';
-            if (oRow < 4) { // either quad 1 or 2
-                if (oCol < 4) { // quad 1
-                    quad1Spaces++;
-                } else { // quad 2
-                    quad2Spaces++;
-                }
-    
-            } else { //  either quad 3 or 4
-                if (oCol < 4) { // quad 3
-                    quad3Spaces++;
-                } else { // quad 4
-                    quad4Spaces++;
-                }
-            }
             oRow = row;
             oCol = col;
-        }
-
-        if (row < 4) { // either quad 1 or 2
-            if (col < 4) { // quad 1
-                if (movingX) {
-                    xQuadUtil = quad1Spaces;
-                } else {
-                    oQuadUtil = quad1Spaces;
-                }
-            } else { // quad 2
-                if (movingX) {
-                    xQuadUtil = quad2Spaces;
-                } else {
-                    oQuadUtil = quad2Spaces;
-                }
-            }
-
-        } else { //  either quad 3 or 4
-            if (col < 4) { // quad 3
-                if (movingX) {
-                    xQuadUtil = quad3Spaces;
-                } else {
-                    oQuadUtil = quad3Spaces;
-                }
-            } else { // quad 4
-                if (movingX) {
-                    xQuadUtil = quad4Spaces;
-                } else {
-                    oQuadUtil = quad4Spaces;
-                }
-            }
         }
     }
 
@@ -523,9 +405,6 @@ class State {
         oRow = oCol = xTop ? 7 : 0;
         xMoves = oMoves = 20;
         xLocalMoves = oLocalMoves = 3;
-        quad1Spaces = quad4Spaces = 15;
-        quad2Spaces = quad3Spaces = 16;
-        xQuadUtil = oQuadUtil = 15;
         winner = "None";
     }
 
