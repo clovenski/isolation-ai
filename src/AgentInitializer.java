@@ -56,7 +56,7 @@ class AgentInitializer {
     private static Heuristic getAgentOHeuristic() {
         return new Heuristic() {
             public int computeUtility(State state) {
-                return (state.getNumOMoves() << state.getNumOLocalMoves()) - (state.getNumXMoves() << state.getNumXLocalMoves());
+                return state.getNumOMoves() - state.getNumXMoves() - state.getNumXMoves();
             }
         };
     }

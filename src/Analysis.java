@@ -13,7 +13,8 @@ class Analysis {
         state.setAgentX(AgentInitializer.getAgentX(state));
         state.setAgentO(AgentInitializer.getAgentO(state));
 
-        final int START_DEPTH = 7;
+        final int START_DEPTH = 6;
+        final long TIME_LIMIT = 1000L;
         int row, col, i, bestDepth, turnCount = 0;
         String compMove, bestCompMove, oppMove, bestOppMove;
         long startTime, runTime;
@@ -21,7 +22,7 @@ class Analysis {
         while (!state.isTerminal()) {
             startTime = System.currentTimeMillis();
 
-            Minimax.timeRemaining = 20000L;
+            Minimax.timeRemaining = TIME_LIMIT;
             Minimax.resetTransTable();
             compMove = Minimax.search(true, state, START_DEPTH);
             if (compMove.equals("DNF") || compMove.equals("")) {
@@ -58,7 +59,7 @@ class Analysis {
             
             startTime = System.currentTimeMillis();
 
-            Minimax.timeRemaining = 20000L;
+            Minimax.timeRemaining = TIME_LIMIT;
             Minimax.resetTransTable();
             oppMove = Minimax.search(false, state, START_DEPTH);
             if (oppMove.equals("DNF") || oppMove.equals("")) {
@@ -109,6 +110,7 @@ class Analysis {
         state.setAgentO(AgentInitializer.getAgentO(state));
 
         final int START_DEPTH = 7;
+        final long TIME_LIMIT = 5000L;
         int game, row, col, i, turnCount = 0;
         String compMove, bestCompMove, oppMove, bestOppMove;
 
@@ -117,7 +119,7 @@ class Analysis {
         for (game = 1; game <= numGames; game++) {
             System.out.printf("Processing game %d of %d . . .\n", game, numGames);
             while (!state.isTerminal()) {
-                Minimax.timeRemaining = 20000L;
+                Minimax.timeRemaining = TIME_LIMIT;
                 Minimax.resetTransTable();
                 compMove = Minimax.search(true, state, START_DEPTH);
                 if (compMove.equals("DNF") || compMove.equals("")) {
@@ -142,7 +144,7 @@ class Analysis {
                     break;
                 }
 
-                Minimax.timeRemaining = 20000L;
+                Minimax.timeRemaining = TIME_LIMIT;
                 Minimax.resetTransTable();
                 oppMove = Minimax.search(false, state, START_DEPTH);
                 if (oppMove.equals("DNF") || oppMove.equals("")) {

@@ -203,7 +203,7 @@ class State {
     // move into row, col
     public void move(boolean forUtilX, boolean movingX, int row, int col) {
         processMove(movingX, row, col);
-        computeUtility(forUtilX);
+        computeUtility(forUtilX, movingX);
     }
 
     // move into row, col; compute utility for both agents if not pvp
@@ -211,9 +211,9 @@ class State {
         processMove(movingX, row, col);
 
         if (!pvp) {
-            computeUtility(true);
+            computeUtility(true, movingX);
             if (agentO != null) {
-                computeUtility(false);
+                computeUtility(false, movingX);
             }
         }
     }
@@ -236,7 +236,7 @@ class State {
     // revert back to row, col
     public void revert(boolean forUtilX, boolean movingX, int row, int col) {
         processRevert(movingX, row, col);
-        computeUtility(forUtilX);
+        computeUtility(forUtilX, movingX);
     }
 
     // revert back to row, col; compute utility for both agents if not pvp
@@ -244,9 +244,9 @@ class State {
         processRevert(movingX, row, col);
 
         if (!pvp) {
-            computeUtility(true);
+            computeUtility(true, movingX);
             if (agentO != null) {
-                computeUtility(false);
+                computeUtility(false, movingX);
             }
         }
     }
@@ -271,7 +271,7 @@ class State {
         return count;
     }
 
-    private void computeUtility(boolean forX) {
+    private void computeUtility(boolean forX, boolean xMoved) {
         int i, j, rowOffset, colOffset;
         xMoves = oMoves = 0;
 
@@ -311,8 +311,8 @@ class State {
         }
 
         if (forX) {
-            if (xMoves == 0) {
-                utilityX = Integer.MIN_VALUE;
+            if (xMoves == 0 && oMoves == 0) {
+                utilityX = xMoved ? Integer.MAX_VALUE : Integer.MIN_VALUE;
             } else if (oMoves == 0) {
                 utilityX = Integer.MAX_VALUE;
             } else {
@@ -320,8 +320,8 @@ class State {
             }
 
         } else {
-            if (oMoves == 0) {
-                utilityO = Integer.MIN_VALUE;
+            if (oMoves == 0 && xMoves == 0) {
+                utilityO = xMoved ? Integer.MIN_VALUE : Integer.MAX_VALUE;
             } else if (xMoves == 0) {
                 utilityO = Integer.MAX_VALUE;
             } else if (agentO != null) {
