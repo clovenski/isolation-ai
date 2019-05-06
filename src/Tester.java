@@ -20,7 +20,7 @@ class Tester {
         while (!state.isTerminal()) {
             startTime = System.currentTimeMillis();
 
-            Minimax.timeRemaining = 5000L;
+            Minimax.timeRemaining = 20000L;
             Minimax.resetTransTable();
             compMove = Minimax.search(true, state, START_DEPTH);
             if (compMove.equals("DNF") || compMove.equals("")) {

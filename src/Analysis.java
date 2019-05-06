@@ -109,8 +109,8 @@ class Analysis {
         state.setAgentX(AgentInitializer.getAgentX(state));
         state.setAgentO(AgentInitializer.getAgentO(state));
 
-        final int START_DEPTH = 7;
-        final long TIME_LIMIT = 5000L;
+        final int START_DEPTH = 6;
+        final long TIME_LIMIT = 1000L;
         int game, row, col, i, turnCount = 0;
         String compMove, bestCompMove, oppMove, bestOppMove;
 
