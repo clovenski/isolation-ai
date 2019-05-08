@@ -45,6 +45,7 @@ class Analysis {
             ui.printRunTime(runTime);
             System.out.println("Best depth: " + bestDepth);
             System.out.println("Best X utility: " + Minimax.getMaxUtility());
+            System.out.println("Transposition table size: " + Minimax.getTableSize());
 
             row = Character.getNumericValue(compMove.charAt(0));
             col = Character.getNumericValue(compMove.charAt(1));
@@ -82,6 +83,7 @@ class Analysis {
             ui.printRunTime(runTime);
             System.out.println("Best depth: " + bestDepth);
             System.out.println("Best O utility: " + Minimax.getMaxUtility());
+            System.out.println("Transposition table size: " + Minimax.getTableSize());
 
             row = Character.getNumericValue(oppMove.charAt(0));
             col = Character.getNumericValue(oppMove.charAt(1));
@@ -109,8 +111,8 @@ class Analysis {
         state.setAgentX(AgentInitializer.getAgentX(state));
         state.setAgentO(AgentInitializer.getAgentO(state));
 
-        final int START_DEPTH = 6;
-        final long TIME_LIMIT = 1000L;
+        final int START_DEPTH = 7;
+        final long TIME_LIMIT = 5000L;
         int game, row, col, i, turnCount = 0;
         String compMove, bestCompMove, oppMove, bestOppMove;
 

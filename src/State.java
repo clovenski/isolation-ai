@@ -203,7 +203,7 @@ class State {
     // move into row, col
     public void move(boolean forUtilX, boolean movingX, int row, int col) {
         processMove(movingX, row, col);
-        computeUtility(forUtilX, movingX);
+        computeUtility(forUtilX, !movingX);
     }
 
     // move into row, col; compute utility for both agents if not pvp
@@ -211,9 +211,9 @@ class State {
         processMove(movingX, row, col);
 
         if (!pvp) {
-            computeUtility(true, movingX);
+            computeUtility(true, !movingX);
             if (agentO != null) {
-                computeUtility(false, movingX);
+                computeUtility(false, !movingX);
             }
         }
     }
@@ -252,61 +252,83 @@ class State {
         }
     }
 
-    private int numLocalMoves(boolean ofX) {
-        int row, col, rowOffset, colOffset, count = 0;
+    private void computeUtility(boolean forX, boolean xTurn) {
+        int axis, i, j, rowOffset, colOffset;
+        boolean[] checkAxis = new boolean[8];
+        xLocalMoves = oLocalMoves = 0;
 
-        row = ofX ? xRow : oRow;
-        col = ofX ? xCol : oCol;
-        for (int i = 0; i < 8; i++) {
+        for (i = 0; i < 8; i++) {
+            checkAxis[i] = false;
+        }
+
+        // count X local moves
+        for (axis = 0; axis < 8; axis++) {
             try {
-                rowOffset = State.AXIS_OFFSETS[i][0][0];
-                colOffset = State.AXIS_OFFSETS[i][1][0];
-                if (board[row + rowOffset][col + colOffset] == '-') {
-                    count++;
+                rowOffset = State.AXIS_OFFSETS[axis][0][0];
+                colOffset = State.AXIS_OFFSETS[axis][1][0];
+                if (board[xRow + rowOffset][xCol + colOffset] == '-') {
+                    xLocalMoves++;
+                    checkAxis[axis] = true;
                 }
             } catch (IndexOutOfBoundsException e) {
-                break;
+                continue;
             }
         }
+        xMoves = xLocalMoves;
 
-        return count;
-    }
-
-    private void computeUtility(boolean forX, boolean xMoved) {
-        int i, j, rowOffset, colOffset;
-        xMoves = oMoves = 0;
-
-        xLocalMoves = numLocalMoves(true);
-        oLocalMoves = numLocalMoves(false);
-
-        for (i = 0; i < 8; i++) {
-            for (j = 0; j < 8; j++) {
-                try {
-                    rowOffset = State.AXIS_OFFSETS[i][0][j];
-                    colOffset = State.AXIS_OFFSETS[i][1][j];
-                    if (board[xRow + rowOffset][xCol + colOffset] == '-') {
-                        xMoves++;
-                    } else {
+        // count rest of X moves
+        for (axis = 0; axis < 8; axis++) {
+            if (checkAxis[axis]) {
+                for (j = 1; j < 8; j++) {
+                    try {
+                        rowOffset = State.AXIS_OFFSETS[axis][0][j];
+                        colOffset = State.AXIS_OFFSETS[axis][1][j];
+                        if (board[xRow + rowOffset][xCol + colOffset] == '-') {
+                            xMoves++;
+                        } else {
+                            break;
+                        }
+                    } catch (IndexOutOfBoundsException e) {
                         break;
                     }
-                } catch (IndexOutOfBoundsException e) {
-                    break;
                 }
             }
         }
 
         for (i = 0; i < 8; i++) {
-            for (j = 0; j < 8; j++) {
-                try {
-                    rowOffset = State.AXIS_OFFSETS[i][0][j];
-                    colOffset = State.AXIS_OFFSETS[i][1][j];
-                    if (board[oRow + rowOffset][oCol + colOffset] == '-') {
-                        oMoves++;
-                    } else {
+            checkAxis[i] = false;
+        }
+
+        // count O local moves
+        for (axis = 0; axis < 8; axis++) {
+            try {
+                rowOffset = State.AXIS_OFFSETS[axis][0][0];
+                colOffset = State.AXIS_OFFSETS[axis][1][0];
+                if (board[oRow + rowOffset][oCol + colOffset] == '-') {
+                    oLocalMoves++;
+                    checkAxis[axis] = true;
+                }
+            } catch (IndexOutOfBoundsException e) {
+                continue;
+            }
+        }
+        oMoves = oLocalMoves;
+
+        // count rest of O moves
+        for (axis = 0; axis < 8; axis++) {
+            if (checkAxis[axis]) {
+                for (j = 1; j < 8; j++) {
+                    try {
+                        rowOffset = State.AXIS_OFFSETS[axis][0][j];
+                        colOffset = State.AXIS_OFFSETS[axis][1][j];
+                        if (board[oRow + rowOffset][oCol + colOffset] == '-') {
+                            oMoves++;
+                        } else {
+                            break;
+                        }
+                    } catch (IndexOutOfBoundsException e) {
                         break;
                     }
-                } catch (IndexOutOfBoundsException e) {
-                    break;
                 }
             }
         }
@@ -314,12 +336,16 @@ class State {
         if (forX) {
             if (xMoves != 0 && oMoves != 0) {
                 utilityX = agentX.utilityFunc();
+                winner = "None";
             } else if (xMoves == 0 && oMoves == 0) {
-                utilityX = xMoved ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+                utilityX = xTurn ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+                winner = xTurn ? "O" : "X";
             } else if (xMoves == 0) {
                 utilityX = Integer.MIN_VALUE;
+                winner = "O";
             } else {
                 utilityX = Integer.MAX_VALUE;
+                winner = "X";
             }
 
         } else {
@@ -328,53 +354,23 @@ class State {
             } else {
                 if (oMoves != 0 && xMoves != 0) {
                     utilityO = agentO.utilityFunc();
+                    winner = "None";
                 } else if (oMoves == 0 && xMoves == 0) {
-                    utilityO = xMoved ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+                    utilityO = xTurn ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+                    winner = xTurn ? "O" : "X";
                 } else if (oMoves == 0) {
                     utilityO = Integer.MIN_VALUE;
+                    winner = "X";
                 } else {
                     utilityO = Integer.MAX_VALUE;
+                    winner = "O";
                 }
             }
         }
     }
 
     public boolean isTerminal() {
-        int i, rowOffset, colOffset;
-        boolean xFree = false;
-
-        for (i = 0; i < 8; i++) {
-            try {
-                rowOffset = State.AXIS_OFFSETS[i][0][0];
-                colOffset = State.AXIS_OFFSETS[i][1][0];
-                if (board[xRow + rowOffset][xCol + colOffset] == '-') {
-                    xFree = true;
-                    break;
-                }
-            } catch (IndexOutOfBoundsException e) {
-                continue;
-            }
-        }
-
-        if (!xFree) {
-            winner = "O";
-            return true;
-        }
-
-        for (i = 0; i < 8; i++) {
-            try {
-                rowOffset = State.AXIS_OFFSETS[i][0][0];
-                colOffset = State.AXIS_OFFSETS[i][1][0];
-                if (board[oRow + rowOffset][oCol + colOffset] == '-') {
-                    return false;
-                }
-            } catch (IndexOutOfBoundsException e) {
-                continue;
-            }
-        }
-
-        winner = "X";
-        return true;
+        return xLocalMoves == 0 || oLocalMoves == 0;
     }
 
     public int getUtility(boolean ofX) {
