@@ -15,6 +15,7 @@ class State {
     private int oMoves;
     private int xLocalMoves;
     private int oLocalMoves;
+    private boolean xTurn;
     private String winner;
     private boolean pvp;
     private static final int[][][] AXIS_OFFSETS = {
@@ -73,6 +74,7 @@ class State {
         xMoves = oMoves = 20;
         xLocalMoves = oLocalMoves = 3;
         winner = "None";
+        xTurn = xTop;
         this.pvp = pvp;
     }
 
@@ -100,6 +102,7 @@ class State {
         xLocalMoves = otherState.xLocalMoves;
         oLocalMoves = otherState.oLocalMoves;
         winner = otherState.winner;
+        xTurn = otherState.xTurn;
         pvp = otherState.pvp;
     }
 
@@ -203,7 +206,8 @@ class State {
     // move into row, col
     public void move(boolean forUtilX, boolean movingX, int row, int col) {
         processMove(movingX, row, col);
-        computeUtility(forUtilX, !movingX);
+        xTurn = !movingX;
+        computeUtility(forUtilX);
     }
 
     // move into row, col; compute utility for both agents if not pvp
@@ -211,9 +215,10 @@ class State {
         processMove(movingX, row, col);
 
         if (!pvp) {
-            computeUtility(true, !movingX);
+            xTurn = !movingX;
+            computeUtility(true);
             if (agentO != null) {
-                computeUtility(false, !movingX);
+                computeUtility(false);
             }
         }
     }
@@ -237,7 +242,8 @@ class State {
     // revert back to row, col
     public void revert(boolean forUtilX, boolean movingX, int row, int col) {
         processRevert(movingX, row, col);
-        computeUtility(forUtilX, movingX);
+        xTurn = movingX;
+        computeUtility(forUtilX);
     }
 
     // revert back to row, col; compute utility for both agents if not pvp
@@ -245,14 +251,15 @@ class State {
         processRevert(movingX, row, col);
 
         if (!pvp) {
-            computeUtility(true, movingX);
+            xTurn = movingX;
+            computeUtility(true);
             if (agentO != null) {
-                computeUtility(false, movingX);
+                computeUtility(false);
             }
         }
     }
 
-    private void computeUtility(boolean forX, boolean xTurn) {
+    private void computeUtility(boolean forX) {
         int axis, i, j, rowOffset, colOffset;
         boolean[] checkAxis = new boolean[8];
         xLocalMoves = oLocalMoves = 0;
@@ -370,7 +377,7 @@ class State {
     }
 
     public boolean isTerminal() {
-        return xLocalMoves == 0 || oLocalMoves == 0;
+        return xTurn ? xLocalMoves == 0 : oLocalMoves == 0;
     }
 
     public int getUtility(boolean ofX) {
@@ -402,6 +409,7 @@ class State {
         xMoves = oMoves = 20;
         xLocalMoves = oLocalMoves = 3;
         winner = "None";
+        xTurn = xTop;
     }
 
     public String toString() {
