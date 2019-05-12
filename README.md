@@ -1,6 +1,6 @@
 # CS 4200 - Project 3 - Isolation
 
-Implement an AI using the Minimax algorithm with alpha-beta pruning to play the game called Isolation.
+Implement an AI using the Minimax algorithm with alpha-beta pruning to play the game called Isolation - two players on an 8x8 board, each player can move like a queen in chess, spaces that each player moves to become occupied and become a sort of barrier, goal is to isolate your opponent to the point that they have no more available moves.
 
 ## Author
 
